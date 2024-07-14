@@ -5,23 +5,14 @@ const jwt = require("jsonwebtoken");
 exports.register = async (req, res) => {
   const { username, email, password } = req.body;
   try {
-    // Check if user with the same email already exists
     let user = await User.findOne({ email });
     if (user) {
       return res.status(400).json({ msg: "User already exists" });
     }
-
-    // Create new user instance
     user = new User({ username, email, password });
-
-    // Hash the password before saving
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
-
-    // Save user to database
+    console.log("Password before save:", user.password);
     await user.save();
-
-    // Generate JWT token
+    console.log("Hashed password after save:", user.password);
     const payload = { user: { id: user.id } };
     jwt.sign(
       payload,
@@ -43,10 +34,14 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
     let user = await User.findOne({ email });
+    console.log("Queried user:", user);
     if (!user) {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
+    console.log("Plain text password:", password);
+    console.log("Hashed password from DB:", user.password);
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log("Password match:", isMatch);
     if (!isMatch) {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
