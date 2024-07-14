@@ -14,8 +14,8 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const payload = { email, password };
-      console.log("Request payload:", payload);
+      // const payload = { email, password };
+      // console.log("Request payload:", payload);
 
       await login(email, password);
       toast.success("Login successful!");
