@@ -13,7 +13,6 @@ const Dashboard = () => {
 			<Navbar />
 			<div className='flex justify-between items-center p-4'>
 				<Total /> <CurrentDate />
-				<h1 className='f-body'>Hello</h1>
 			</div>
 		</>
 	);

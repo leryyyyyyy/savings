@@ -53,7 +53,7 @@ const Navbar = () => {
 	if (!user) return null;
 	return (
 		<nav className='flex justify-between items-center p-3 bg-dark'>
-			<h1 className='flex-grow text-center f-heading justify-center items-center'>
+			<h1 className='flex-grow text-center f-heading justify-center items-center text-pink-50'>
 				Family Savings
 			</h1>
 			<button
