@@ -1,3 +1,5 @@
+const { Rubik, Assistant } = require("next/font/google");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -12,7 +14,103 @@ module.exports = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      fontFamily: {
+        headings: [Rubik],
+        body: [Assistant],
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }) {
+      addUtilities({
+        ".f-heading": {
+          fontFamily: "Rubik",
+          fontWeight: "600",
+          fontSize: "48px",
+        },
+        ".f-subheading": {
+          fontFamily: "Rubik",
+          fontWeight: "500",
+          fontSize: "30px",
+        },
+        ".f-body": {
+          fontFamily: "Assistant",
+          fontWeight: "400",
+          fontSize: "18px",
+        },
+        ".primary-button": {
+          fontFamily: "Rubik",
+          fontWeight: "600",
+          fontSize: "18px",
+          backgroundColor: "#f472b6",
+          color: "#f3f4f6",
+          borderRadius: "9px",
+          padding: "8px 15px",
+        },
+        ".primary-button-hover": {
+          fontFamily: "Rubik",
+          fontWeight: "600",
+          fontSize: "18px",
+          backgroundColor: "#f9a8d4 ",
+          color: "#111827",
+          borderRadius: "9px",
+          padding: "8px 15px",
+        },
+        ".paid-button": {
+          fontFamily: "Rubik",
+          fontWeight: "600",
+          fontSize: "18px",
+          backgroundColor: "#22c55e",
+          color: "#f3f4f6",
+          borderRadius: "9px",
+          padding: "8px 15px",
+        },
+        ".paid-button-hover": {
+          fontFamily: "Rubik",
+          fontWeight: "600",
+          fontSize: "18px",
+          backgroundColor: "#86efac",
+          color: "#111827",
+          borderRadius: "9px",
+          padding: "8px 15px",
+        },
+        ".delayed-button": {
+          fontFamily: "Rubik",
+          fontWeight: "600",
+          fontSize: "18px",
+          backgroundColor: "#f97316",
+          color: "#f3f4f6",
+          borderRadius: "9px",
+          padding: "8px 15px",
+        },
+        ".delayed-button-hover": {
+          fontFamily: "Rubik",
+          fontWeight: "600",
+          fontSize: "18px",
+          backgroundColor: "#fdba74",
+          color: "#111827",
+          borderRadius: "9px",
+          padding: "8px 15px",
+        },
+        ".warning-button": {
+          fontFamily: "Rubik",
+          fontWeight: "600",
+          fontSize: "18px",
+          backgroundColor: "#ef4444",
+          color: "#f3f4f6",
+          borderRadius: "9px",
+          padding: "8px 15px",
+        },
+        ".warning-button-hover": {
+          fontFamily: "Rubik",
+          fontWeight: "600",
+          fontSize: "18px",
+          backgroundColor: "#fca5a5",
+          color: "#111827",
+          borderRadius: "9px",
+          padding: "8px 15px",
+        },
+      });
+    },
+  ],
 };
