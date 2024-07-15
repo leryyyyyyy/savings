@@ -22,7 +22,7 @@ const Login = () => {
       router.push("/dashboard"); // Redirect to the dashboard
     } catch (err) {
       console.error("Login error:", err);
-      toast.error("Login failed. Please try again.");
+      toast.error("Wrong email or password. Please try again.");
     }
   };
 
