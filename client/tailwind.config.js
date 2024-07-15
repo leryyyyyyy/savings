@@ -29,7 +29,7 @@ module.exports = {
 				},
 				'.bg-dark': {
 					//! bg-color for table headers, etc.
-					backgroundColor: '#be185d ',
+					backgroundColor: '#be185d',
 				},
 				'.f-heading': {
 					fontFamily: 'Rubik',
