@@ -1,7 +1,12 @@
 {
+<<<<<<< HEAD
   "extends": ["next/core-web-vitals", "next/babel"]
 <<<<<<< HEAD
 }
 =======
 }
 >>>>>>> origin/master
+=======
+  "extends": ["eslint:recommended", "next/core-web-vitals"]
+}
+>>>>>>> 1d920314965f4c57e6cfb68c618a9b806e720789
