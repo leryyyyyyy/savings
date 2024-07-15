@@ -8,6 +8,8 @@ const Dashboard = () => {
   const { user, logout, setUser } = useContext(AuthContext);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -16,19 +18,34 @@ const Dashboard = () => {
           withCredentials: true,
         });
         setUser(res.data);
-        setLoading(false);
       } catch (err) {
         setUser(null);
         router.push("/login");
+      } finally {
+        setLoading(false);
+        setAuthChecked(true);
       }
     };
 
-    if (!user) {
+    if (!authChecked) {
       checkAuth();
-    } else {
-      setLoading(false);
     }
-  }, [user]);
+  }, [authChecked, setUser, router]);
+
+  const handleLogout = async () => {
+    setLogoutLoading(true);
+    console.log("Logout initiated");
+    try {
+      await logout();
+      setUser(null);
+      router.push("/login");
+      console.log("Logout successful");
+    } catch (err) {
+      console.error("Logout error:", err);
+    } finally {
+      setLogoutLoading(false);
+    }
+  };
 
   if (loading) return <p>Loading...</p>;
 
@@ -37,7 +54,9 @@ const Dashboard = () => {
   return (
     <div>
       <h1>Welcome, {user.username}</h1>
-      <button onClick={logout}>Logout</button>
+      <button onClick={handleLogout} disabled={logoutLoading}>
+        {logoutLoading ? "Logging out............." : "Logout"}
+      </button>
     </div>
   );
 };
