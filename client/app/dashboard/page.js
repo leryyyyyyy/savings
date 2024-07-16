@@ -11,6 +11,7 @@ const Dashboard = () => {
 	return (
 		<>
 			<Navbar />
+
 			<div className='flex justify-between items-center p-4'>
 				<Total /> <CurrentDate />
 			</div>
