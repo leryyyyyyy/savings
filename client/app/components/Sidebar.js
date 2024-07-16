@@ -1,13 +1,18 @@
 import React from "react";
+import { usePathname } from "next/navigation";
 
 const Sidebar = () => {
+  const pathname = usePathname();
+  const isActive = (path) => pathname === path;
   return (
-    <div className="w-64 h-screen bg-pink-400 text-gray-100">
+    <div className="w-64 h-screen bg-pink-400 text-gray-100 fixed">
       <div className="p-4">
         <nav className="space-y-2">
           <a
             href="/dashboard"
-            className="flex p-2 rounded-lg f-body hover:bg-pink-200 hover:text-gray-900"
+            className={`${
+              isActive("/dashboard") ? "bg-pink-500" : ""
+            } flex p-2 rounded-lg f-body hover:bg-pink-200 hover:text-gray-900`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -27,7 +32,9 @@ const Sidebar = () => {
           </a>
           <a
             href="/deposit"
-            className="flex p-2 rounded-lg f-body hover:bg-pink-200 hover:text-gray-900"
+            className={`${
+              isActive("/deposit") ? "bg-pink-500" : ""
+            } flex p-2 rounded-lg f-body hover:bg-pink-200 hover:text-gray-900`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -47,7 +54,9 @@ const Sidebar = () => {
           </a>
           <a
             href="/members"
-            className="flex p-2 rounded-lg f-body hover:bg-pink-200 hover:text-gray-900"
+            className={`${
+              isActive("/members") ? "bg-pink-500" : ""
+            } flex p-2 rounded-lg f-body hover:bg-pink-200 hover:text-gray-900`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -67,7 +76,9 @@ const Sidebar = () => {
           </a>
           <a
             href="/reports"
-            className="flex p-2 rounded-lg f-body hover:bg-pink-200 hover:text-gray-900"
+            className={`${
+              isActive("/reports") ? "bg-pink-500" : ""
+            } flex p-2 rounded-lg f-body hover:bg-pink-200 hover:text-gray-900`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
