@@ -1,4 +1,4 @@
-const { Rubik, Assistant } = require('next/font/google');
+const { Rubik, Assistant, Allura } = require('next/font/google');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -15,6 +15,7 @@ module.exports = {
 					'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
 			},
 			fontFamily: {
+				nav: [Allura],
 				headings: [Rubik],
 				body: [Assistant],
 			},
@@ -31,6 +32,12 @@ module.exports = {
 					//! bg-color for table headers, etc.
 					backgroundColor: '#be185d',
 				},
+				'.f-nav': {
+					fontFamily: 'Allura',
+					fontWeight: '400',
+					fontSize: '50px', //! changed 48px to 32px
+					color: '#fdf2f8 ', //! added text-color
+				},
 				'.f-heading': {
 					fontFamily: 'Rubik',
 					fontWeight: '600',
@@ -42,6 +49,10 @@ module.exports = {
 					fontWeight: '500',
 					fontSize: '24px', //? changed 30px to 24px
 					color: '#111827  ', //? added text-color
+				},
+				'.f-dash': {
+					fontFamily: 'Rubik',
+					fontWeight: '500',
 				},
 				'.f-body': {
 					fontFamily: 'Assistant',
