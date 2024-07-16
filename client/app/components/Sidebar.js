@@ -5,14 +5,14 @@ const Sidebar = () => {
   const pathname = usePathname();
   const isActive = (path) => pathname === path;
   return (
-    <div className="w-64 h-screen bg-pink-400 text-gray-100 fixed">
+    <div className="w-60 h-screen bg-pink-400 text-gray-100 fixed">
       <div className="p-4">
         <nav className="space-y-2">
           <a
             href="/dashboard"
             className={`${
               isActive("/dashboard") ? "bg-pink-500" : ""
-            } flex p-2 rounded-lg f-body hover:bg-pink-200 hover:text-gray-900`}
+            } flex p-2 rounded-lg text-pink-50 font-headings text-lg font-medium hover:bg-pink-200 hover:text-gray-900`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -34,7 +34,7 @@ const Sidebar = () => {
             href="/deposit"
             className={`${
               isActive("/deposit") ? "bg-pink-500" : ""
-            } flex p-2 rounded-lg f-body hover:bg-pink-200 hover:text-gray-900`}
+            } flex p-2 rounded-lg text-pink-50 font-headings text-lg font-medium hover:bg-pink-200 hover:text-gray-900`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -56,7 +56,7 @@ const Sidebar = () => {
             href="/members"
             className={`${
               isActive("/members") ? "bg-pink-500" : ""
-            } flex p-2 rounded-lg f-body hover:bg-pink-200 hover:text-gray-900`}
+            } flex p-2 rounded-lg text-pink-50 font-headings text-lg font-medium hover:bg-pink-200 hover:text-gray-900`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -78,7 +78,7 @@ const Sidebar = () => {
             href="/reports"
             className={`${
               isActive("/reports") ? "bg-pink-500" : ""
-            } flex p-2 rounded-lg f-body hover:bg-pink-200 hover:text-gray-900`}
+            } flex p-2 rounded-lg text-pink-50 font-headings text-lg font-medium hover:bg-pink-200 hover:text-gray-900`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

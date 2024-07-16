@@ -18,14 +18,24 @@
   }
 }
 
-body {
-  /* color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb)); */
+/* Assuming you have a global CSS file or can add styles */
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.container {
+  display: flex;
+  height: 100%;
+}
+
+.content {
+  margin-left: 240px; /* Match this with the sidebar width */
+  padding: 20px;
+  width: calc(100% - 240px); /* Adjust based on sidebar width */
+  /* background-color: #f3f4f6; */
 }
 
 @layer utilities {
