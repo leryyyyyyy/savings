@@ -8,47 +8,20 @@ import axios from "axios";
 const Navbar = () => {
   const { user, logout, setUser } = useContext(AuthContext);
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [authChecked, setAuthChecked] = useState(false);
   const [logoutLoading, setLogoutLoading] = useState(false);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await axios.get("http://localhost:5000/api/auth/user", {
-          withCredentials: true,
-        });
-        setUser(res.data);
-      } catch (err) {
-        setUser(null);
-        router.push("/login");
-      } finally {
-        setLoading(false);
-        setAuthChecked(true);
-      }
-    };
-
-    if (!authChecked) {
-      checkAuth();
-    }
-  }, [authChecked, setUser, router]);
 
   const handleLogout = async () => {
     setLogoutLoading(true);
-    console.log("Logout initiated");
     try {
       await logout();
       setUser(null);
       router.push("/login");
-      console.log("Logout successful");
     } catch (err) {
       console.error("Logout error:", err);
     } finally {
       setLogoutLoading(false);
     }
   };
-
-  // if (loading) return <p>Loading...</p>;
 
   if (!user) return null;
   return (
