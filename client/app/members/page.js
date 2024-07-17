@@ -1,11 +1,24 @@
 "use client";
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { useRouter } from "next/navigation";
+import AuthContext from "@/context/AuthContext";
+import { checkAuth } from "@/utils/authUtils";
 
 const membersList = () => {
+  const { user, setUser } = useContext(AuthContext);
+  const [authChecked, setAuthChecked] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    if (!authChecked) {
+      checkAuth(setUser, setAuthChecked, router);
+    }
+  }, [authChecked, setUser, router]);
+
+  if (!user) return null;
+
   const handleAddNewMember = () => {
     router.push("/members/add-new-member");
   };
