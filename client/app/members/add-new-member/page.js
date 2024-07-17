@@ -97,7 +97,7 @@ const addNewMember = () => {
             </div>
             <div className="col-span-2 ml-10">
               <label htmlFor="numberOfBody" className="block f-body">
-                No. of Body
+                No. of Body/Bodies
               </label>
               <div className="mt-2">
                 <input
