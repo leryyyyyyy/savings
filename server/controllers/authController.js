@@ -45,16 +45,11 @@ exports.login = async (req, res) => {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
     const payload = { user: { id: user.id } };
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" },
-      (err, token) => {
-        if (err) throw err;
-        res.cookie("token", token, { httpOnly: true });
-        res.json({ token });
-      }
-    );
+    jwt.sign(payload, process.env.JWT_SECRET, (err, token) => {
+      if (err) throw err;
+      res.cookie("token", token, { httpOnly: true });
+      res.json({ token });
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
@@ -105,12 +100,12 @@ exports.addMember = async (req, res) => {
   }
 };
 
-exports.getAllMember = async (req, res) => {
+exports.getAllMembers = async (req, res) => {
   try {
-    const Member = await Member.find();
-    res.json(Member);
+    const members = await Member.find();
+    res.status(200).json(members);
   } catch (err) {
-    console.error(err.message);
+    console.error("Error fetching members:", err.message);
     res.status(500).send("Server error");
   }
 };

@@ -1,12 +1,13 @@
 "use client";
 import { createContext, useState, useEffect } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-
+  const router = useRouter();
   useEffect(() => {
     const checkLoggedIn = async () => {
       try {
@@ -15,7 +16,8 @@ export const AuthProvider = ({ children }) => {
         });
         setUser(res.data);
       } catch (err) {
-        setUser(null);
+        // setUser(null);
+        router.push("/login");
       }
     };
     checkLoggedIn();
