@@ -11,9 +11,9 @@ exports.register = async (req, res) => {
       return res.status(400).json({ msg: "User already exists" });
     }
     user = new User({ username, email, password });
-    console.log("Password before save:", user.password);
+    // console.log("Password before save:", user.password);
     await user.save();
-    console.log("Hashed password after save:", user.password);
+    // console.log("Hashed password after save:", user.password);
     const payload = { user: { id: user.id } };
     jwt.sign(
       payload,
@@ -39,8 +39,6 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
-    console.log("Plain text password:", password);
-    console.log("Hashed password from DB:", user.password);
     const isMatch = await bcrypt.compare(password, user.password);
     console.log("Password match:", isMatch);
     if (!isMatch) {
@@ -103,6 +101,16 @@ exports.addMember = async (req, res) => {
       .json({ msg: "Member added successfully", member: newMember });
   } catch (err) {
     console.error("Error adding member:", err.message);
+    res.status(500).send("Server error");
+  }
+};
+
+exports.getAllMember = async (req, res) => {
+  try {
+    const Member = await Member.find();
+    res.json(Member);
+  } catch (err) {
+    console.error(err.message);
     res.status(500).send("Server error");
   }
 };
