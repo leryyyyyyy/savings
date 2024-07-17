@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Member = require("../models/Members");
 
 exports.register = async (req, res) => {
   const { username, email, password } = req.body;
@@ -88,6 +89,30 @@ exports.getAllUsers = async (req, res) => {
     res.json(users);
   } catch (err) {
     console.error(err.message);
+    res.status(500).send("Server error");
+  }
+};
+
+exports.addMember = async (req, res) => {
+  const { name, contactNumber, address, numberOfBody, userId } = req.body;
+  try {
+    // Create a new member
+    const newMember = new Member({
+      name,
+      contactNumber,
+      address,
+      numberOfBody,
+      userId,
+    });
+
+    // Save the member to the database
+    await newMember.save();
+
+    res
+      .status(201)
+      .json({ msg: "Member added successfully", member: newMember });
+  } catch (err) {
+    console.error("Error adding member:", err.message);
     res.status(500).send("Server error");
   }
 };
