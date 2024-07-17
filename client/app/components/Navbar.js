@@ -25,7 +25,7 @@ const Navbar = () => {
 
 	if (!user) return null;
 	return (
-		<nav className='flex justify-between items-center p-3 bg-dark'>
+		<nav className='flex justify-between items-center p-3 bg-dark sticky top-0'>
 			<h1 className='flex-grow text-center justify-center items-center text-pink-50 f-heading'>
 				Family Savings
 			</h1>
