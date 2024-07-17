@@ -34,3 +34,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#settings on own machine
+settings.json
+
+# Ignore the json-server database file
+db.json

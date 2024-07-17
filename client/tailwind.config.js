@@ -49,6 +49,11 @@ module.exports = {
           fontSize: "18px",
           color: "#111827  ", //? added text-color
         },
+        ".f-dash": {
+          //? added f-dash on divs in dashboard
+          fontFamily: "Rubik",
+          fontWeight: "500",
+        },
         ".primary-button": {
           fontFamily: "Rubik",
           fontWeight: "600",
