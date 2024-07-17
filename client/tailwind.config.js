@@ -43,6 +43,11 @@ module.exports = {
 					fontSize: '24px', //? changed 30px to 24px
 					color: '#111827  ', //? added text-color
 				},
+				'.f-dash': {
+					//? added f-dash on divs in dashboard
+					fontFamily: 'Rubik',
+					fontWeight: '500',
+				},
 				'.f-body': {
 					fontFamily: 'Assistant',
 					fontWeight: '400',

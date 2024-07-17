@@ -25,9 +25,12 @@ const CurrentDate = () => {
 	}, []);
 
 	return (
-		<div>
-			<p className='f-subheading'>{currentDate}</p>
-		</div>
+		<>
+			<div className='f-subheading text-center'>
+				<p>Current Date and Time</p>
+				<p>{currentDate}</p>
+			</div>
+		</>
 	);
 };
 
