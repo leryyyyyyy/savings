@@ -34,6 +34,12 @@ const addNewMember = () => {
         }
       );
       toast.success("Member added successfully!");
+      setFormData({
+        name: "",
+        contactNumber: "",
+        address: "",
+        numberOfBody: "",
+      });
     } catch (err) {
       toast.error("Error adding member: " + err.response.data);
     }
