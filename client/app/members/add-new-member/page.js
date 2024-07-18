@@ -5,6 +5,8 @@ import React from "react";
 import { useState, useContext } from "react";
 import axios from "axios";
 import AuthContext from "@/context/AuthContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const addNewMember = () => {
   const { user } = useContext(AuthContext);
@@ -31,9 +33,9 @@ const addNewMember = () => {
           withCredentials: true,
         }
       );
-      console.log("Member added:", res.data);
+      toast.success("Member added successfully!");
     } catch (err) {
-      console.error("Error adding member:", err.response.data);
+      toast.error("Error adding member: " + err.response.data);
     }
   };
 
@@ -130,6 +132,7 @@ const addNewMember = () => {
             </button>
           </div>
         </form>
+        <ToastContainer />
       </div>
     </>
   );
