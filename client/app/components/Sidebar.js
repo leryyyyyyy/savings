@@ -1,7 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
+import AuthContext from "@/context/AuthContext";
 import { usePathname } from "next/navigation";
 
 const Sidebar = () => {
+  const { user } = useContext(AuthContext);
+  if (user === null) {
+    return <div class="h-screen flex items-center justify-center">Loading</div>; // TODO: put loading animation
+  }
+  if (!user) {
+    return null;
+  }
   const pathname = usePathname();
   const isActive = (path) => pathname === path;
   return (
