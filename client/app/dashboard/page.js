@@ -6,6 +6,8 @@ import Total from "../components/Total";
 import CurrentDate from "../components/CurrentDate";
 import Sidebar from "../components/Sidebar";
 import Separator from "../components/Separator";
+import Loader from "../components/Loader/Loader.js";
+
 // TODO: PUT THIS TO USE THE CHECK USER STATE(IF LOGGED IN OR NOT)
 import { useContext } from "react";
 import AuthContext from "@/context/AuthContext";
@@ -14,7 +16,7 @@ const Dashboard = () => {
 	// TODO: PUT THIS TO USE THE CHECK USER STATE(IF LOGGED IN OR NOT)
 	const { user } = useContext(AuthContext);
 	if (user === null) {
-		return <div class="h-screen flex items-center justify-center">Loading</div>; // TODO: put loading animation
+		return <Loader />; // ! put loading animation
 	}
 	if (!user) {
 		return null;
@@ -39,7 +41,7 @@ const Dashboard = () => {
 		<>
 			<Navbar />
 			<Sidebar />
-			<div className="ml-64 flex-1 p-10">
+			<div className="content">
 				<div className="flex justify-between items-center pb-10 ">
 					<Total />
 					<CurrentDate />
