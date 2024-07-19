@@ -160,7 +160,7 @@ const Deposit = () => {
 				{isSuccessModalVisible && (
 					<div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
 						<div className="bg-white p-20 rounded-md">
-							<h2 className="text-xl text-green-600 font-bold mb-4">
+							<h2 className="text-xl text-green-600 font-bold mb-4 text-center">
 								Record Successful!
 							</h2>
 						</div>
@@ -179,10 +179,12 @@ const Deposit = () => {
 				{isNoMemberModalVisible && (
 					<div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
 						<div className="bg-white p-20 rounded-md">
-							<h2 className="text-xl text-red-600 font-bold mb-4">
+							<h2 className="text-xl text-red-600 font-bold mb-4 text-center">
 								No Member Selected
 							</h2>
-							<p className="mb-4">Please select a member before saving.</p>
+							<p className="mb-4 text-center">
+								Please select a member before saving.
+							</p>
 						</div>
 					</div>
 				)}
