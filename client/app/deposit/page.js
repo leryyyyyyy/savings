@@ -44,8 +44,8 @@ const Deposit = () => {
 				<Separator />
 				<div className="flex">
 					<p>Members: </p>
-					<select onChange={handleSelectChange}>
-						<option value="" disabled selected>
+					<select onChange={handleSelectChange} defaultValue="">
+						<option value="" disabled>
 							Select a member...
 						</option>
 						{members.map((member) => (
@@ -56,17 +56,11 @@ const Deposit = () => {
 					</select>
 				</div>
 				{selectedMember && (
-					<div>
+					<div className="mt-4">
 						<p>No. of Body: {selectedMember.noOfBody}</p>
 						<p>Amount: {selectedMember.amount}</p>
 					</div>
 				)}
-
-				<div>
-					<button className="primary-button hover:primary-button-hover">
-						Save
-					</button>
-				</div>
 			</div>
 		</>
 	);
