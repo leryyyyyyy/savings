@@ -1,20 +1,56 @@
 "use client";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { useRouter } from "next/navigation";
 import AuthContext from "@/context/AuthContext";
+import axios from "axios";
 
 const membersList = () => {
-  const { user } = useContext(AuthContext);
-  const router = useRouter();
+  const [members, setMembers] = useState([]);
 
-  if (user === null) {
-    return <div class="h-screen flex items-center justify-center">Loading</div>; // TODO: put loading animation
-  }
-  if (!user) {
-    return null;
-  }
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/members/memberList"
+        );
+        setMembers(response.data);
+      } catch (err) {
+        console.error("Error fetching members:", err);
+      }
+    };
+
+    fetchMembers();
+  }, []);
+
+  // useEffect(() => {
+  //   if (user) {
+  //     fetch("/api/members")
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         setMembers(data);
+  //         setLoading(false);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching members: " + error);
+  //         setLoading(false);
+  //       });
+  //   }
+  // }, [user]);
+
+  // if (!user) {
+  //   return (
+  //     <div className="h-screen flex items-center justify-center">Loading</div>
+  //   ); // TODO: put loading animation
+  // }
+
+  // if (user === null) {
+  //   return <div class="h-screen flex items-center justify-center">Loading</div>; // TODO: put loading animation
+  // }
+  // if (!user) {
+  //   return null;
+  // }
   const handleAddNewMember = () => {
     router.push("/members/add-new-member");
   };
@@ -47,6 +83,38 @@ const membersList = () => {
           </button>
         </div>
         <hr></hr>
+        {/* {loading ? (
+          <div>Loading...</div>
+        ) : ( */}
+        <table className="table-auto w-full">
+          <thead>
+            <tr>
+              <th className="px-4 py-2">Name</th>
+              <th className="px-4 py-2">Contact Number</th>
+              <th className="px-4 py-2">Address</th>
+              <th className="px-4 py-2">Number of Body</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Array.isArray(members) && members.length > 0 ? (
+              members.map((members) => (
+                <tr key={members._id}>
+                  <td className="border px-4 py-2">{members.name}</td>
+                  <td className="border px-4 py-2">{members.contactNumber}</td>
+                  <td className="border px-4 py-2">{members.address}</td>
+                  <td className="border px-4 py-2">{members.numberOfBody}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td className="border px-4 py-2" colSpan="4">
+                  No members found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+        {/* )} */}
       </div>
     </>
   );
