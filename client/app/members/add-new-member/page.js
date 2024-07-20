@@ -74,7 +74,7 @@ const addNewMember = () => {
                   value={name}
                   onChange={onChange}
                   autoComplete="name"
-                  className="f-body w-full px-3 py-1 border rounded-md shadow-sm focus:outline-none focus:border-pink-400"
+                  className="f-body w-full px-3 py-1 border rounded-md shadow-sm focus:outline-none focus:border-sky-600"
                   required
                 />
               </div>
@@ -91,7 +91,7 @@ const addNewMember = () => {
                   value={contactNumber}
                   onChange={onChange}
                   autoComplete="number"
-                  className="f-body w-full px-3 py-1 border rounded-md shadow-sm focus:outline-none focus:border-pink-400"
+                  className="f-body w-full px-3 py-1 border rounded-md shadow-sm focus:outline-none focus:border-sky-600"
                   required
                 />
               </div>
@@ -108,7 +108,7 @@ const addNewMember = () => {
                   value={address}
                   onChange={onChange}
                   autoComplete="address"
-                  className="f-body w-full px-3 py-1 border rounded-md shadow-sm focus:outline-none focus:border-pink-400"
+                  className="f-body w-full px-3 py-1 border rounded-md shadow-sm focus:outline-none focus:border-sky-600"
                   required
                 />
               </div>
@@ -125,7 +125,7 @@ const addNewMember = () => {
                   value={numberOfBody}
                   onChange={onChange}
                   autoComplete="number"
-                  className="f-body w-full px-3 py-1 border rounded-md shadow-sm focus:outline-none focus:border-pink-400"
+                  className="f-body w-full px-3 py-1 border rounded-md shadow-sm focus:outline-none focus:border-sky-600"
                   required
                 />
               </div>

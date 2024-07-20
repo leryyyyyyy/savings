@@ -92,7 +92,7 @@ const membersList = () => {
             Add New Member
           </button>
         </div>
-        <hr className="mb-7"></hr>
+        <hr className="mb-3"></hr>
         <div className="mb-4 flex w-64 f-body px-3 py-1 border rounded-md shadow-sm ">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -117,15 +117,15 @@ const membersList = () => {
           />
         </div>
         <table className="table-fixed w-full bg-slate-50">
-          <thead className="border-t-[1px] bg-light text-pink-700 text-left">
+          <thead className="border-t-[1px] bg-light text-sky-700 text-left">
             <tr>
-              <th className="px-4 py-2 border-b-[1px]  f-subheading">Name</th>
-              <th className="px-4 py-2 border-b-[1px] f-subheading w-48">
+              <th className="px-4 py-2 border-b-[1px] f-subheading">Name</th>
+              <th className="px-4 py-2 border-b-[1px] f-subheading">
                 Contact No.
               </th>
               <th className="px-4 py-2 border-b-[1px] f-subheading">Address</th>
-              <th className="px-4 py-2 border-b-[1px] f-subheading w-32">
-                Body #
+              <th className="px-4 py-2 border-b-[1px] f-subheading text-center">
+                Body Number
               </th>
             </tr>
           </thead>
@@ -165,7 +165,7 @@ const membersList = () => {
                 onClick={() => paginate(i + 1)}
                 className={` rounded-md px-3 py-1 font-body text-lg font-semibold ${
                   currentPage === i + 1
-                    ? "bg-pink-400 text-slate-50"
+                    ? "bg-dark text-slate-50"
                     : "text-gray-900"
                 } `}
               >
