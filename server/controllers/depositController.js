@@ -104,3 +104,39 @@ exports.createDeposit = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+
+exports.getMembersWithoutDeposit = async (req, res) => {
+  try {
+    // Fetch all members
+    const members = await Member.find();
+
+    // Calculate the current week in the Philippines time zone
+    const currentDate = moment().tz("Asia/Manila");
+    const year = currentDate.year();
+    const month = currentDate.month() + 1; // month() returns 0-11, so add 1
+    const week = getWeekOfMonth(currentDate); // Use getWeekOfMonth to calculate the week
+
+    // Fetch the weekly deposits for the current week
+    const weeklyDeposit = await WeeklyDeposit.findOne({ year, month, week });
+
+    // If there are no deposits for the current week, all members are without deposits
+    if (!weeklyDeposit) {
+      return res.status(200).json(members);
+    }
+
+    // Get the list of member IDs who made deposits
+    const membersWithDeposits = weeklyDeposit.deposits.map((deposit) =>
+      deposit.memberId.toString()
+    );
+
+    // Filter out the members who didn't make a deposit
+    const membersWithoutDeposits = members.filter(
+      (member) => !membersWithDeposits.includes(member._id.toString())
+    );
+
+    res.status(200).json(membersWithoutDeposits);
+  } catch (err) {
+    console.error("Error fetching members without deposits:", err.message);
+    res.status(500).send("Server error");
+  }
+};

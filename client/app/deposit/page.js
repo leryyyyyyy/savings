@@ -21,7 +21,7 @@ const Deposit = () => {
     const fetchMembers = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/members/memberList"
+          "http://localhost:5000/api/deposit/depositList"
         );
         console.log("Fetched members:", response.data);
         setMembers(response.data);
@@ -63,7 +63,7 @@ const Deposit = () => {
       return;
     }
 
-    const { formattedDate, formattedTime } = formatDateTime();
+    // const { formattedDate, formattedTime } = formatDateTime();
 
     // const submissionData = {
     //   date: `${formattedDate} ${formattedTime}`, // Combined date and time
@@ -86,6 +86,7 @@ const Deposit = () => {
       setTimeout(() => {
         setIsSuccessModalVisible(false);
         resetForm();
+        window.location.reload();
       }, 2000);
     } catch (error) {
       console.error("Error saving record:", error);
