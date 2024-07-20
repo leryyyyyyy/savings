@@ -58,6 +58,10 @@ const WeeklyDepositSchema = new mongoose.Schema({
         type: Number,
         required: true,
       },
+      day: {
+        type: Number,
+        required: true,
+      },
     },
   ],
 });

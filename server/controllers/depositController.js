@@ -71,11 +71,18 @@ exports.createDeposit = async (req, res) => {
     const year = currentDate.year();
     const month = currentDate.month() + 1; // month() returns 0-11, so add 1
     const week = getWeekOfMonth(currentDate); // Use getWeekOfMonth to calculate the week
+    const day = currentDate.date();
 
     // Find or create the weekly deposit document
     let weeklyDeposit = await WeeklyDeposit.findOne({ year, month, week });
     if (!weeklyDeposit) {
-      weeklyDeposit = new WeeklyDeposit({ year, month, week, deposits: [] });
+      weeklyDeposit = new WeeklyDeposit({
+        year,
+        month,
+        week,
+        deposits: [],
+        day,
+      });
     }
 
     // Add the new deposit to the weekly deposits
@@ -83,6 +90,7 @@ exports.createDeposit = async (req, res) => {
       memberId: member._id,
       memberName: member.name,
       depositAmount,
+      day,
     });
 
     // Save the weekly deposit document
