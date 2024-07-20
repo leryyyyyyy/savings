@@ -7,6 +7,7 @@ import axios from "axios";
 import AuthContext from "@/context/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Loader from "../../components/Loader/Loader.js";
 
 const addNewMember = () => {
   const { user } = useContext(AuthContext);
@@ -46,7 +47,7 @@ const addNewMember = () => {
   };
 
   if (user === null) {
-    return <div class="h-screen flex items-center justify-center">Loading</div>; // TODO: put loading animation
+    return <Loader />;
   }
   if (!user) {
     return null;
@@ -63,9 +64,9 @@ const addNewMember = () => {
           <div className="grid grid-cols-6 gap-x-6 gap-y-8 mt-10 px-10">
             <div className="col-span-3">
               <label htmlFor="name" className="block f-body">
-                Name
+                Name *
               </label>
-              <div className="mt-2">
+              <div className="mt-1">
                 <input
                   id="name"
                   name="name"
@@ -73,15 +74,16 @@ const addNewMember = () => {
                   value={name}
                   onChange={onChange}
                   autoComplete="name"
-                  className="f-body w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:border-pink-400"
+                  className="f-body w-full px-3 py-1 border rounded-md shadow-sm focus:outline-none focus:border-pink-400"
+                  required
                 />
               </div>
             </div>
             <div className="col-span-2 ml-10">
               <label htmlFor="contactNumber" className="block f-body ">
-                Contact Number
+                Contact Number *
               </label>
-              <div className="mt-2">
+              <div className="mt-1">
                 <input
                   id="contactNumber"
                   name="contactNumber"
@@ -89,16 +91,16 @@ const addNewMember = () => {
                   value={contactNumber}
                   onChange={onChange}
                   autoComplete="number"
-                  className="f-body w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:border-pink-400"
+                  className="f-body w-full px-3 py-1 border rounded-md shadow-sm focus:outline-none focus:border-pink-400"
                   required
                 />
               </div>
             </div>
             <div className="col-span-3">
               <label htmlFor="address" className="block f-body">
-                Address
+                Address *
               </label>
-              <div className="mt-2">
+              <div className="mt-1">
                 <input
                   id="address"
                   name="address"
@@ -106,16 +108,16 @@ const addNewMember = () => {
                   value={address}
                   onChange={onChange}
                   autoComplete="address"
-                  className="f-body w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:border-pink-400"
+                  className="f-body w-full px-3 py-1 border rounded-md shadow-sm focus:outline-none focus:border-pink-400"
                   required
                 />
               </div>
             </div>
             <div className="col-span-2 ml-10">
               <label htmlFor="numberOfBody" className="block f-body">
-                No. of Body/Bodies
+                No. of Body/Bodies *
               </label>
-              <div className="mt-2">
+              <div className="mt-1">
                 <input
                   id="numberOfBody"
                   name="numberOfBody"
@@ -123,7 +125,7 @@ const addNewMember = () => {
                   value={numberOfBody}
                   onChange={onChange}
                   autoComplete="number"
-                  className="f-body w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:border-pink-400"
+                  className="f-body w-full px-3 py-1 border rounded-md shadow-sm focus:outline-none focus:border-pink-400"
                   required
                 />
               </div>
