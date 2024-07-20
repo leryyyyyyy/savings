@@ -14,14 +14,30 @@ const Sidebar = () => {
   const pathname = usePathname();
   const isActive = (path) => pathname === path;
   return (
-    <div className="w-60 h-screen bg-pink-400 text-gray-100 fixed">
+    <div className="w-60 h-screen bg-dark text-gray-100 fixed">
       <div className="p-4">
         <nav className="space-y-2">
+          <div className="flex justify-center mb-5">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="size-28"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+              />
+            </svg>
+          </div>
           <a
             href="/dashboard"
             className={`${
-              isActive("/dashboard") ? "bg-pink-500" : ""
-            } flex p-2 rounded-lg text-pink-50 font-headings text-lg font-medium hover:bg-pink-200 hover:text-gray-900`}
+              isActive("/dashboard") ? "bg-sky-800 shadow-lg" : ""
+            } flex px-2 py-1 rounded-lg text-pink-50 font-headings text-lg font-medium hover:bg-sky-100 hover:text-sky-600`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -42,8 +58,8 @@ const Sidebar = () => {
           <a
             href="/deposit"
             className={`${
-              isActive("/deposit") ? "bg-pink-500" : ""
-            } flex p-2 rounded-lg text-pink-50 font-headings text-lg font-medium hover:bg-pink-200 hover:text-gray-900`}
+              isActive("/deposit") ? "bg-sky-800 shadow-lg" : ""
+            } flex px-2 py-1 rounded-lg text-pink-50 font-headings text-lg font-medium hover:bg-sky-100 hover:text-sky-600`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -64,8 +80,8 @@ const Sidebar = () => {
           <a
             href="/members"
             className={`${
-              isActive("/members") ? "bg-pink-500" : ""
-            } flex p-2 rounded-lg text-pink-50 font-headings text-lg font-medium hover:bg-pink-200 hover:text-gray-900`}
+              isActive("/members") ? "bg-sky-800 shadow-lg" : ""
+            } flex px-2 py-1 rounded-lg text-pink-50 font-headings text-lg font-medium hover:bg-sky-100 hover:text-sky-600`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -86,8 +102,8 @@ const Sidebar = () => {
           <a
             href="/reports"
             className={`${
-              isActive("/reports") ? "bg-pink-500" : ""
-            } flex p-2 rounded-lg text-pink-50 font-headings text-lg font-medium hover:bg-pink-200 hover:text-gray-900`}
+              isActive("/reports") ? "bg-sky-800 shadow-lg" : ""
+            } flex px-2 py-1 rounded-lg text-pink-50 font-headings text-lg font-medium hover:bg-sky-100 hover:text-sky-600`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

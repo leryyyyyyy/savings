@@ -36,7 +36,7 @@ const Login = () => {
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <input
-                className=" f-body w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:border-pink-400"
+                className=" f-body w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:border-sky-600"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -47,7 +47,7 @@ const Login = () => {
             </div>
             <div className="mb-4">
               <input
-                className=" f-body w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:border-pink-400"
+                className=" f-body w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:border-sky-600"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
