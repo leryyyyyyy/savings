@@ -20,7 +20,7 @@ const Deposit = () => {
 	useEffect(() => {
 		const fetchMembers = async () => {
 			try {
-				const response = await axios.post(
+				const response = await axios.get(
 					"http://localhost:5000/api/members/memberList"
 				);
 				console.log("Fetched members:", response.data);
