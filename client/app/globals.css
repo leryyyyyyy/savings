@@ -7,41 +7,41 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+	--foreground-rgb: 0, 0, 0;
+	--background-start-rgb: 214, 219, 220;
+	--background-end-rgb: 255, 255, 255;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+	:root {
+		--foreground-rgb: 255, 255, 255;
+		--background-start-rgb: 0, 0, 0;
+		--background-end-rgb: 0, 0, 0;
+	}
 }
 
 /* Assuming you have a global CSS file or can add styles */
 body,
 html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
+	margin: 0;
+	padding: 0;
+	height: 100%;
 }
 
 .container {
-  display: flex;
-  height: 100%;
+	display: flex;
+	height: 100%;
 }
 
 .content {
-  margin-left: 240px; /* Match this with the sidebar width */
-  padding: 20px;
-  width: calc(100% - 240px); /* Adjust based on sidebar width */
-  /* background-color: #f3f4f6; */
+	margin-left: 240px; /* Match this with the sidebar width */
+	padding: 3rem; /*adjusted content padding*/
+	width: calc(100% - 240px); /* Adjust based on sidebar width */
+	background-color: #f9fafb;
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+	.text-balance {
+		text-wrap: balance;
+	}
 }
