@@ -6,7 +6,7 @@ const Loader = () => {
 		<>
 			<div className="flex justify-center items-center flex-col h-screen">
 				<div className={styles.loader}></div>
-				<p className="text-xl text-pink-500 font-semibold ">Loading...</p>
+				<p className="text-xl text-sky-600 font-semibold ">Loading...</p>
 			</div>
 		</>
 	);

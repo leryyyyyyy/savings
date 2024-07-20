@@ -120,8 +120,8 @@ const Deposit = () => {
 					<CurrentDate />
 				</section>
 				<Separator />
-				<div>
-					<section className="h-60">
+				<div className="border-2 border-sky-600 bg-sky-50 rounded-md p-10">
+					<section className="h-52 flex flex-col justify-center">
 						<div className="flex items-center text-2xl font-bold f-dash">
 							<p className="mr-4">Member name:</p>
 							<select
@@ -140,7 +140,7 @@ const Deposit = () => {
 							</select>
 						</div>
 						{selectedMember && (
-							<div className="mt-4 justify-center text-xl font-semibold">
+							<div className="mt-4 text-xl font-semibold">
 								<p className="pb-4">
 									No. of Body: {selectedMember.numberOfBody}
 								</p>
@@ -149,7 +149,7 @@ const Deposit = () => {
 						)}
 					</section>
 				</div>
-				<div className="flex justify-end">
+				<div className="flex justify-end pt-5">
 					<button
 						onClick={handleSave}
 						className="primary-button hover:primary-button-hover"
