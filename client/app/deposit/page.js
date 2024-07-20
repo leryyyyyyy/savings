@@ -42,17 +42,17 @@ const Deposit = () => {
     console.log("Selected member:", member ? member.name : "None");
   };
 
-  const formatDateTime = () => {
-    const now = new Date();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
-    const year = String(now.getFullYear()).slice(-2);
-    const formattedDate = `${month}-${day}-${year}`;
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    const formattedTime = `${hours}:${minutes}`;
-    return { formattedDate, formattedTime };
-  };
+  // const formatDateTime = () => {
+  //   const now = new Date();
+  //   const month = String(now.getMonth() + 1).padStart(2, "0");
+  //   const day = String(now.getDate()).padStart(2, "0");
+  //   const year = String(now.getFullYear()).slice(-2);
+  //   const formattedDate = `${month}-${day}-${year}`;
+  //   const hours = String(now.getHours()).padStart(2, "0");
+  //   const minutes = String(now.getMinutes()).padStart(2, "0");
+  //   const formattedTime = `${hours}:${minutes}`;
+  //   return { formattedDate, formattedTime };
+  // };
 
   const handleSave = async () => {
     if (!selectedMember) {
@@ -65,19 +65,22 @@ const Deposit = () => {
 
     const { formattedDate, formattedTime } = formatDateTime();
 
+    // const submissionData = {
+    //   date: `${formattedDate} ${formattedTime}`, // Combined date and time
+    //   memberName: selectedMember.name,
+    //   numberOfBody: selectedMember.numberOfBody,
+    //   amount: amountDeposit * selectedMember.numberOfBody,
+    // };
     const submissionData = {
-      date: `${formattedDate} ${formattedTime}`, // Combined date and time
-      memberName: selectedMember.name,
-      numberOfBody: selectedMember.numberOfBody,
-      amount: amountDeposit * selectedMember.numberOfBody,
+      memberId: selectedMember._id,
+      depositAmount: amountDeposit * selectedMember.numberOfBody,
     };
 
     try {
-      // Log the data instead of making the API call
-      console.log("Record would be saved:", submissionData);
-
-      // Simulate an API call
-      // const response = await axios.post("http://localhost:5000/api/deposits", submissionData);
+      const response = await axios.post(
+        "http://localhost:5000/api/deposit/addDeposit",
+        submissionData
+      );
 
       setIsSuccessModalVisible(true);
       setTimeout(() => {
