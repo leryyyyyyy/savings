@@ -54,27 +54,8 @@ module.exports = {
 					fontFamily: "Rubik",
 					fontWeight: "500",
 				},
-
-				// ".reports-default": {
-				// 	fontFamily: "Assistant",
-				// 	fontWeight: "600",
-				// 	textAlign: "center",
-				// 	backgroundColor: "#f0f9ff ",
-				// 	color: "#0284c7",
-				// 	border: "2px solid #0284c7",
-				// 	borderRadius: "9px",
-				// 	padding: "2.5rem",
-				// 	textTransform: "capitalize",
-				// 	transition: "all 0.3s ease-in-out",
-				// 	fontSize: "1.25rem",
-				// 	lineHeight: "1.75rem",
-				// 	cursor: "pointer",
-				// },
-				// ".reports-default-hover": {
-				// 	backgroundColor: "#0284c7",
-				// 	color: "#f0f9ff",
-				// },
 				".dash-nav": {
+					//!modified dashnav config
 					backgroundColor: "#f0f9ff",
 					color: "#0284c7",
 					border: "2px solid #0284c7",
