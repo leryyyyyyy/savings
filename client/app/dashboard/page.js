@@ -41,7 +41,7 @@ const Dashboard = () => {
 		<>
 			<Navbar />
 			<Sidebar />
-			<div className="content">
+			<div className="content h-screen">
 				<div className="flex justify-between items-center pb-10 ">
 					<Total />
 					<CurrentDate />
