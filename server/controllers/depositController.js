@@ -51,8 +51,8 @@ const moment = require("moment-timezone");
 
 const getWeekOfMonth = (date) => {
   const startOfMonth = moment(date).startOf("month");
-  const startDay = startOfMonth.day(); // Day of the week the month starts on
-  const adjustedDate = date.date() + startDay; // Adjust the date to account for the start day
+  const startOfWeek = startOfMonth.isoWeekday(1); // Start of the first week (Monday)
+  const adjustedDate = date.diff(startOfWeek, "days") + 1; // Adjust the date to account for the start day
   return Math.ceil(adjustedDate / 7);
 };
 
@@ -107,9 +107,6 @@ exports.createDeposit = async (req, res) => {
 
 exports.getMembersWithoutDeposit = async (req, res) => {
   try {
-    // Fetch all members
-    const members = await Member.find();
-
     // Calculate the current week in the Philippines time zone
     const currentDate = moment().tz("Asia/Manila");
     const year = currentDate.year();
@@ -121,6 +118,7 @@ exports.getMembersWithoutDeposit = async (req, res) => {
 
     // If there are no deposits for the current week, all members are without deposits
     if (!weeklyDeposit) {
+      const members = await Member.find();
       return res.status(200).json(members);
     }
 
@@ -129,14 +127,14 @@ exports.getMembersWithoutDeposit = async (req, res) => {
       deposit.memberId.toString()
     );
 
-    // Filter out the members who didn't make a deposit
-    const membersWithoutDeposits = members.filter(
-      (member) => !membersWithDeposits.includes(member._id.toString())
-    );
+    // Fetch members who haven't made a deposit in the current week
+    const membersWithoutDeposits = await Member.find({
+      _id: { $nin: membersWithDeposits },
+    });
 
     res.status(200).json(membersWithoutDeposits);
   } catch (err) {
     console.error("Error fetching members without deposits:", err.message);
-    res.status(500).send("Server error");
+    res.status(500).json({ msg: "Server error", error: err.message });
   }
 };
