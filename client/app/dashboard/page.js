@@ -50,19 +50,19 @@ const Dashboard = () => {
 				<div className="flex justify-between items-center h-40 space-x-20 f-dash">
 					<div
 						onClick={members}
-						className="dash-nav text-2xl capitalize flex items-center justify-center flex-1 h-full transition-all duration-300 ease-in-out  hover:dash-nav-hover hover:scale-105 hover:shadow-lg cursor-pointer"
+						className="dash-nav text-2xl font-bold flex items-center justify-center flex-1 h-full  hover:dash-nav-hover hover:scale-105 hover:shadow-lg"
 					>
 						<p> members</p>
 					</div>
 					<div
 						onClick={deposit}
-						className="dash-nav text-2xl capitalize flex items-center justify-center flex-1 h-full transition-all duration-300 ease-in-out  hover:dash-nav-hover hover:scale-105 hover:shadow-lg cursor-pointer"
+						className="dash-nav text-2xl font-bold flex items-center justify-center flex-1 h-full hover:dash-nav-hover hover:scale-105 hover:shadow-lg"
 					>
 						<p>Deposit for this week</p>
 					</div>
 					<div
 						onClick={reports}
-						className="dash-nav text-2xl capitalize flex items-center justify-center flex-1 h-full transition-all duration-300 ease-in-out  hover:dash-nav-hover hover:scale-105 hover:shadow-lg cursor-pointer"
+						className="dash-nav text-2xl font-bold flex items-center justify-center flex-1 h-full  hover:dash-nav-hover hover:scale-105 hover:shadow-lg"
 					>
 						<p> reports</p>
 					</div>

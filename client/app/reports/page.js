@@ -49,7 +49,7 @@ const MonthList = () => {
 							{months.map((month) => (
 								<div
 									key={month.id}
-									className="reports-default hover:reports-default-hover hover:scale-105 hover:shadow-lg "
+									className="dash-nav hover:dash-nav-hover p-10 font-bold text-xl  hover:scale-105 hover:shadow-lg"
 								>
 									{month.name}
 								</div>
