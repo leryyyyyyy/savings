@@ -13,7 +13,7 @@ const membersList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredMembers, setFilteredMembers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [membersPerPage] = useState(5); // Change this value to set members per page
+  const [membersPerPage] = useState(7); // Change this value to set members per page
   const router = useRouter();
 
   useEffect(() => {
@@ -116,47 +116,62 @@ const membersList = () => {
             className="bg-transparent focus:outline-none"
           />
         </div>
-        <table className="table-fixed w-full bg-slate-50">
-          <thead className="border-t-[1px] bg-light text-sky-700 text-left">
-            <tr>
-              <th className="px-4 py-2 border-b-[1px] f-subheading">Name</th>
-              <th className="px-4 py-2 border-b-[1px] f-subheading">
-                Contact No.
-              </th>
-              <th className="px-4 py-2 border-b-[1px] f-subheading">Address</th>
-              <th className="px-4 py-2 border-b-[1px] f-subheading text-center">
-                Body Number
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.isArray(currentMembers) && currentMembers.length > 0 ? (
-              currentMembers.map((members) => (
-                <tr key={members._id}>
-                  <td className="border-b-[1px] px-4 py-3 f-body">
-                    {members.name}
-                  </td>
-                  <td className="border-b-[1px] px-4 py-3 f-body">
-                    {members.contactNumber}
-                  </td>
-                  <td className="border-b-[1px] px-4 py-3 f-body">
-                    {members.address}
-                  </td>
-                  <td className="border-b-[1px] px-4 py-3 f-body text-center">
-                    {members.numberOfBody}
+        <div className="h-80 overflow-y-auto bg-white rounded-xl">
+          <table className="table-fixed w-full ">
+            <thead className="border-t-[1px] bg-light text-sky-700 text-left sticky top-0">
+              <tr>
+                <th className="px-4 py-2 border-b-[1px] f-subheading">Name</th>
+                <th className="px-4 py-2 border-b-[1px] f-subheading">
+                  Contact No.
+                </th>
+                <th className="px-4 py-2 border-b-[1px] f-subheading">
+                  Address
+                </th>
+                <th className="px-4 py-2 border-b-[1px] f-subheading text-center">
+                  Body Number
+                </th>
+                <th className="px-4 py-2 border-b-[1px] f-subheading text-center">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {Array.isArray(currentMembers) && currentMembers.length > 0 ? (
+                currentMembers.map((members) => (
+                  <tr key={members._id}>
+                    <td className="border-b-[1px] px-4 py-3 f-body">
+                      {members.name}
+                    </td>
+                    <td className="border-b-[1px] px-4 py-3 f-body">
+                      {members.contactNumber}
+                    </td>
+                    <td className="border-b-[1px] px-4 py-3 f-body">
+                      {members.address}
+                    </td>
+                    <td className="border-b-[1px] px-4 py-3 f-body text-center">
+                      {members.numberOfBody}
+                    </td>
+                    <td className="border-b-[1px] px-4 py-3 f-body text-center">
+                      <button className="mr-2 text-xs primary-button hover:primary-button-hover py-1 px-2 rounded">
+                        Update
+                      </button>
+                      <button className="text-xs warning-button hover:warning-button-hover py-1 px-2 rounded">
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td className="border px-4 py-2" colSpan="4">
+                    No members found
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td className="border px-4 py-2" colSpan="4">
-                  No members found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-        <div className="mt-8">
+              )}
+            </tbody>
+          </table>
+        </div>
+        <div className="mt-8 fixed bottom-0">
           {Array.from(
             { length: Math.ceil(filteredMembers.length / membersPerPage) },
             (_, i) => (
