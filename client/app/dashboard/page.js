@@ -7,6 +7,7 @@ import CurrentDate from "../components/CurrentDate";
 import Sidebar from "../components/Sidebar";
 import Separator from "../components/Separator";
 import Loader from "../components/Loader/Loader.js";
+import MemberCount from "../components/MemberCount";
 
 // TODO: PUT THIS TO USE THE CHECK USER STATE(IF LOGGED IN OR NOT)
 import { useContext } from "react";
@@ -42,8 +43,11 @@ const Dashboard = () => {
 			<Navbar />
 			<Sidebar />
 			<div className="content h-screen">
-				<div className="flex justify-between items-center pb-10 ">
-					<Total />
+				<div className="flex justify-between items-center mb-7">
+					<div className="space-y-3">
+						<Total />
+						<MemberCount />
+					</div>
 					<CurrentDate />
 				</div>
 				<Separator />
