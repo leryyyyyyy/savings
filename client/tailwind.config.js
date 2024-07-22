@@ -55,14 +55,20 @@ module.exports = {
 					fontWeight: "500",
 				},
 				".dash-nav": {
-					backgroundColor: "#f0f9ff ",
+					//!modified dashnav config
+					backgroundColor: "#f0f9ff",
 					color: "#0284c7",
 					border: "2px solid #0284c7",
 					borderRadius: "9px",
+					fontWeight: "500",
+					textTransform: "capitalize",
+					cursor: "pointer",
+					transition: "all 0.3s ease-in-out",
+					textAlign: "center",
 				},
 				".dash-nav-hover": {
 					backgroundColor: "#0284c7",
-					color: "#f0f9ff ",
+					color: "#f0f9ff",
 				},
 				".primary-button": {
 					fontFamily: "Rubik",

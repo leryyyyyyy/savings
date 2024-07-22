@@ -2,31 +2,64 @@
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import Separator from "../components/Separator";
+import CurrentDate from "../components/CurrentDate";
 import Loader from "../components/Loader/Loader";
 import React, { useState, useEffect, useContext } from "react";
+import axios from "axios";
 import AuthContext from "@/context/AuthContext";
-const Reports = () => {
-	// ! [put before return] PUT THIS TO USE THE CHECK USER STATE(IF LOGGED IN OR NOT)
+
+const MonthList = () => {
+	const [months, setMonths] = useState([]);
+
+	useEffect(() => {
+		const fetchMonths = async () => {
+			try {
+				const response = await axios.get("http://localhost:4000/months");
+				setMonths(response.data);
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			}
+		};
+
+		fetchMonths();
+	}, []);
+
 	const { user } = useContext(AuthContext);
 	if (user === null) {
-		return <Loader />; // ! put loading animation
+		return <Loader />;
 	}
 	if (!user) {
 		return null;
 	}
-	// TODO: END
+
 	return (
 		<>
 			<Navbar />
 			<Sidebar />
-			<div className="content">
-				<div className="flex justify-between items-center pb-10">
+			<div className="content h-screen">
+				<section className="flex justify-between items-center pb-10">
 					<h1 className="f-heading">Reports</h1>
-				</div>
+					<CurrentDate />
+				</section>
 				<Separator />
+
+				<main>
+					<div className="space-y-12">
+						<div className="grid grid-cols-3 gap-12">
+							{months.map((month) => (
+								<div
+									key={month.id}
+									className="dash-nav hover:dash-nav-hover p-10 font-bold text-xl  hover:scale-105 hover:shadow-lg"
+								>
+									{month.name}
+								</div>
+							))}
+						</div>
+					</div>
+				</main>
 			</div>
 		</>
 	);
 };
 
-export default Reports;
+export default MonthList;
