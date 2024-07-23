@@ -43,15 +43,15 @@ const Dashboard = () => {
 			<Navbar />
 			<Sidebar />
 			<div className="content h-screen">
-				<div className="flex justify-between items-center mb-7">
+				<section className="flex justify-between items-center mb-7">
 					<div className="space-y-3">
 						<Total />
 						<MemberCount />
 					</div>
 					<CurrentDate />
-				</div>
+				</section>
 				<Separator />
-				<div className="flex justify-between items-center h-40 space-x-20 f-dash">
+				<main className="flex justify-between items-center h-40 space-x-20 f-dash">
 					<div
 						onClick={members}
 						className="dash-nav text-2xl font-bold flex items-center justify-center flex-1 h-full  hover:dash-nav-hover hover:scale-105 hover:shadow-lg"
@@ -70,7 +70,7 @@ const Dashboard = () => {
 					>
 						<p> reports</p>
 					</div>
-				</div>
+				</main>
 			</div>
 		</>
 	);
