@@ -4,7 +4,7 @@ import Sidebar from "../components/Sidebar";
 import Separator from "../components/Separator";
 import CurrentDate from "../components/CurrentDate";
 import Loader from "../components/Loader/Loader";
-import MonthlyView from "../components/MonthlyView";
+import WeeklyView from "../components/WeeklyView";
 import React, { useContext } from "react";
 import AuthContext from "@/context/AuthContext";
 
@@ -21,17 +21,16 @@ const Reports = () => {
 		<>
 			<Navbar />
 			<Sidebar />
-			<div className="content h-screen">
+			<section className="content h-screen">
 				<section className="flex justify-between items-center pb-10">
 					<h1 className="f-heading">Reports</h1>
 					<CurrentDate />
 				</section>
 				<Separator />
-
 				<main>
-					<MonthlyView />
+					<WeeklyView />
 				</main>
-			</div>
+			</section>
 		</>
 	);
 };
