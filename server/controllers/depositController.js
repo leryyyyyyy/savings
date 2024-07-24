@@ -3,57 +3,24 @@ const WeeklyDeposit = require("../models/weeklyDeposit");
 
 const moment = require("moment-timezone");
 
-// const getWeekOfMonth = (date) => {
-//   const startOfMonth = moment(date).startOf("month");
-//   const startDay = startOfMonth.day(); // Day of the week the month starts on
-//   const adjustedDate = date.date() + startDay; // Adjust the date to account for the start day
-//   return Math.ceil(adjustedDate / 7);
-// };
-// exports.createDeposit = async (req, res) => {
-//   const { memberId, depositAmount } = req.body;
+const getWeekOfYear = (date) => {
+  return date.isoWeek();
+};
 
-//   try {
-//     // Find the member by ID
-//     const member = await Member.findById(memberId);
-//     if (!member) {
-//       return res.status(404).json({ msg: "Member not found" });
-//     }
-
-//     // Calculate the week of the month in the Philippines time zone
-//     const currentDate = moment().tz("Asia/Manila");
-//     const weekOfMonth = getWeekOfMonth(currentDate);
-//     const readableDate = moment(currentDate)
-//       .tz("Asia/Manila")
-//       .format("YYYY/MM/DD HH:mm:ss");
-//     console.log(readableDate);
-//     // Create a new deposit
-//     const newDeposit = new Deposit({
-//       memberId: member._id,
-//       memberName: member.name,
-//       depositAmount,
-//       date: currentDate.toDate(),
-//       weekOfMonth,
-//     });
-
-//     // Save the deposit to the database
-//     await newDeposit.save();
-
-//     res.status(201).json({
-//       msg: "Deposit created successfully",
-//       deposit: newDeposit,
-//       readableTime: readableDate,
-//     });
-//   } catch (err) {
-//     console.error("Error creating deposit:", err.message);
-//     res.status(500).send("Server error");
-//   }
-// };
-
-const getWeekOfMonth = (date) => {
-  const startOfMonth = moment(date).startOf("month");
-  const startOfWeek = startOfMonth.isoWeekday(1); // Start of the first week (Monday)
-  const adjustedDate = date.diff(startOfWeek, "days") + 1; // Adjust the date to account for the start day
-  return Math.ceil(adjustedDate / 7);
+// Function to get the start and end date of the ISO week in the correct timezone
+const getWeekDateRange = (date) => {
+  const startOfWeek = date
+    .clone()
+    .tz("Asia/Manila")
+    .startOf("isoWeek")
+    .add(1, "day")
+    .startOf("day");
+  const endOfWeek = date
+    .clone()
+    .tz("Asia/Manila")
+    .endOf("isoWeek")
+    .endOf("day");
+  return { startDate: startOfWeek, endDate: endOfWeek };
 };
 
 exports.createDeposit = async (req, res) => {
@@ -66,22 +33,21 @@ exports.createDeposit = async (req, res) => {
       return res.status(404).json({ msg: "Member not found" });
     }
 
-    // Calculate the week and month in the Philippines time zone
+    // Calculate the week and year in the Philippines time zone
     const currentDate = moment().tz("Asia/Manila");
-    const year = currentDate.year();
-    const month = currentDate.month() + 1; // month() returns 0-11, so add 1
-    const week = getWeekOfMonth(currentDate); // Use getWeekOfMonth to calculate the week
-    const day = currentDate.date();
+    const year = moment().tz("Asia/Manila").year();
+    const week = getWeekOfYear(currentDate); // Use getWeekOfYear to calculate the week
+    const { startDate, endDate } = getWeekDateRange(currentDate);
 
     // Find or create the weekly deposit document
-    let weeklyDeposit = await WeeklyDeposit.findOne({ year, month, week });
+    let weeklyDeposit = await WeeklyDeposit.findOne({ year, week });
     if (!weeklyDeposit) {
       weeklyDeposit = new WeeklyDeposit({
         year,
-        month,
         week,
+        startDate,
+        endDate,
         deposits: [],
-        day,
       });
     }
 
@@ -90,7 +56,7 @@ exports.createDeposit = async (req, res) => {
       memberId: member._id,
       memberName: member.name,
       depositAmount,
-      day,
+      date: currentDate.toDate(), // Store as Date type
     });
 
     // Save the weekly deposit document
@@ -110,11 +76,10 @@ exports.getMembersWithoutDeposit = async (req, res) => {
     // Calculate the current week in the Philippines time zone
     const currentDate = moment().tz("Asia/Manila");
     const year = currentDate.year();
-    const month = currentDate.month() + 1; // month() returns 0-11, so add 1
-    const week = getWeekOfMonth(currentDate); // Use getWeekOfMonth to calculate the week
+    const week = getWeekOfYear(currentDate); // Use getWeekOfYear to calculate the week
 
     // Fetch the weekly deposits for the current week
-    const weeklyDeposit = await WeeklyDeposit.findOne({ year, month, week });
+    const weeklyDeposit = await WeeklyDeposit.findOne({ year, week });
 
     // If there are no deposits for the current week, all members are without deposits
     if (!weeklyDeposit) {
