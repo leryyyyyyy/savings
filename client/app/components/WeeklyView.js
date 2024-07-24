@@ -50,10 +50,10 @@ const WeeklyView = () => {
 													<th className="px-4 py-2 border-b-[1px] f-subheading">
 														Body Number
 													</th>
-													<th className="px-4 py-2 border-b-[1px] f-subheading ">
+													<th className="px-4 py-2 border-b-[1px] f-subheading">
 														Amount
 													</th>
-													<th className="px-4 py-2 border-b-[1px] f-subheading ">
+													<th className="px-4 py-2 border-b-[1px] f-subheading">
 														Date
 													</th>
 												</tr>
@@ -65,8 +65,12 @@ const WeeklyView = () => {
 														<td className="border px-4 py-2 text-center">
 															{user.body}
 														</td>
-														<td className="border px-4 py-2 text-center">
-															{user.amount}
+														<td className="border px-4 py-2 flex justify-center items-center text-center ">
+															{user.amount || (
+																<span className="bg-red-500 text-white px-2 py-1 rounded-lg text-xs ">
+																	Not Paid
+																</span>
+															)}
 														</td>
 														<td className="border px-4 py-2 text-center">
 															{user.date}
