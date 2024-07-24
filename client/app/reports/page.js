@@ -4,26 +4,11 @@ import Sidebar from "../components/Sidebar";
 import Separator from "../components/Separator";
 import CurrentDate from "../components/CurrentDate";
 import Loader from "../components/Loader/Loader";
-import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
+import MonthlyView from "../components/MonthlyView";
+import React, { useContext } from "react";
 import AuthContext from "@/context/AuthContext";
 
-const MonthList = () => {
-	const [months, setMonths] = useState([]);
-
-	useEffect(() => {
-		const fetchMonths = async () => {
-			try {
-				const response = await axios.get("http://localhost:4000/months");
-				setMonths(response.data);
-			} catch (error) {
-				console.error("Error fetching data:", error);
-			}
-		};
-
-		fetchMonths();
-	}, []);
-
+const Reports = () => {
 	const { user } = useContext(AuthContext);
 	if (user === null) {
 		return <Loader />;
@@ -44,22 +29,11 @@ const MonthList = () => {
 				<Separator />
 
 				<main>
-					<div className="space-y-12">
-						<div className="grid grid-cols-3 gap-12">
-							{months.map((month) => (
-								<div
-									key={month.id}
-									className="dash-nav hover:dash-nav-hover p-10 font-bold text-xl  hover:scale-105 hover:shadow-lg"
-								>
-									{month.name}
-								</div>
-							))}
-						</div>
-					</div>
+					<MonthlyView />
 				</main>
 			</div>
 		</>
 	);
 };
 
-export default MonthList;
+export default Reports;
