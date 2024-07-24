@@ -25,9 +25,13 @@ const WeeklyView = () => {
 			<div className="m-12">
 				<div className="flex flex-col space-y-10">
 					{weeks.map((week) => (
-						<div key={week.id}>
+						<div key={week.id} className="relative">
 							<div
-								className="dash-nav hover:dash-nav-hover p-5 font-bold text-xl hover:scale-105 hover:shadow-lg cursor-pointer"
+								className={`dash-nav p-5 font-bold text-xl cursor-pointer ${
+									selectedWeek === week.id
+										? "dash-nav-hover scale-105 shadow-lg"
+										: "hover:dash-nav-hover hover:scale-105 hover:shadow-lg"
+								}`}
 								onClick={() =>
 									setSelectedWeek(selectedWeek === week.id ? null : week.id)
 								}
@@ -36,34 +40,42 @@ const WeeklyView = () => {
 							</div>
 							{selectedWeek === week.id && (
 								<div className="p-5">
-									<table className="table-auto w-full border-collapse ">
-										<thead className="border-t-[1px] bg-light text-sky-700 text-left sticky top-0">
-											<tr>
-												<th className="px-4 py-2 border-b-[1px] f-subheading">
-													Name
-												</th>
-												<th className="px-4 py-2 border-b-[1px] f-subheading">
-													Contact No.
-												</th>
-
-												<th className="px-4 py-2 border-b-[1px] f-subheading text-center">
-													Body Number
-												</th>
-												<th className="px-4 py-2 border-b-[1px] f-subheading text-center">
-													Amount
-												</th>
-											</tr>
-										</thead>
-										<tbody>
-											{week.users?.map((user) => (
-												<tr key={user.id}>
-													<td className="border px-4 py-2">{user.id}</td>
-													<td className="border px-4 py-2">{user.name}</td>
-													<td className="border px-4 py-2">{user.email}</td>
+									<div className="w-full overflow-x-auto">
+										<table className="table-fixed w-full border-collapse f-body">
+											<thead className="border-t-[1px] bg-light text-sky-700 sticky top-0 text-center">
+												<tr>
+													<th className="px-4 py-2 border-b-[1px] f-subheading">
+														Name
+													</th>
+													<th className="px-4 py-2 border-b-[1px] f-subheading">
+														Body Number
+													</th>
+													<th className="px-4 py-2 border-b-[1px] f-subheading ">
+														Amount
+													</th>
+													<th className="px-4 py-2 border-b-[1px] f-subheading ">
+														Date
+													</th>
 												</tr>
-											))}
-										</tbody>
-									</table>
+											</thead>
+											<tbody>
+												{week.users?.map((user) => (
+													<tr key={user.id}>
+														<td className="border px-4 py-2">{user.name}</td>
+														<td className="border px-4 py-2 text-center">
+															{user.body}
+														</td>
+														<td className="border px-4 py-2 text-center">
+															{user.amount}
+														</td>
+														<td className="border px-4 py-2 text-center">
+															{user.date}
+														</td>
+													</tr>
+												))}
+											</tbody>
+										</table>
+									</div>
 								</div>
 							)}
 						</div>
