@@ -44,6 +44,10 @@ const membersList = () => {
     router.push("/members/add-new-member");
   };
 
+  const handleUpdate = (id) => {
+    router.push(`members/${id}/update-member`);
+  };
+
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
@@ -116,9 +120,9 @@ const membersList = () => {
             className="bg-transparent focus:outline-none"
           />
         </div>
-        <div className="h-80 overflow-y-auto bg-white rounded-xl">
+        <div className="h-96 overflow-y-auto bg-white rounded-xl">
           <table className="table-fixed w-full ">
-            <thead className="border-t-[1px] bg-light text-sky-700 text-left sticky top-0">
+            <thead className="border-t-2 bg-light text-sky-700 text-left sticky top-0">
               <tr>
                 <th className="px-4 py-2 border-b-[1px] f-subheading">Name</th>
                 <th className="px-4 py-2 border-b-[1px] f-subheading">
@@ -152,7 +156,10 @@ const membersList = () => {
                       {members.numberOfBody}
                     </td>
                     <td className="border-b-[1px] px-4 py-3 f-body text-center">
-                      <button className="mr-2 text-xs primary-button hover:primary-button-hover py-1 px-2 rounded">
+                      <button
+                        onClick={() => handleUpdate(members._id)}
+                        className="mr-2 text-xs primary-button hover:primary-button-hover py-1 px-2 rounded"
+                      >
                         Update
                       </button>
                       <button className="text-xs warning-button hover:warning-button-hover py-1 px-2 rounded">
