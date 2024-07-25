@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Loader from "../../../components/Loader/Loader.js";
 
 const editMember = () => {
@@ -49,8 +50,11 @@ const editMember = () => {
         `http://localhost:5000/api/members/editMember/${id}`,
         member
       );
-      toast.success("Member added successfully!");
-      router.push("/members");
+      toast.success("Member updated successfully!");
+
+      setTimeout(() => {
+        router.push("/members");
+      }, 2000);
     } catch (error) {
       console.error("Error updating member:", error);
     }
@@ -150,8 +154,8 @@ const editMember = () => {
             </button>
           </div>
         </form>
+        <ToastContainer />
       </div>
-      <ToastContainer />
     </>
   );
 };
