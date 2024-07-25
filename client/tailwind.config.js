@@ -43,6 +43,9 @@ module.exports = {
 					fontSize: "20px", //! changed font size
 					//removed text color
 				},
+				".b-font": {
+					fontFamily: "Assistant",
+				},
 				".f-body": {
 					fontFamily: "Assistant",
 					fontWeight: "400",

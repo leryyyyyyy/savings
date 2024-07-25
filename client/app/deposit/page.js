@@ -121,7 +121,11 @@ const Deposit = () => {
 
 	const { user } = useContext(AuthContext);
 	if (user === null) {
-		return <Loader />;
+		return (
+			<div className="flex items-center justify-center h-screen">
+				<Loader />
+			</div>
+		);
 	}
 	if (!user) {
 		return null;

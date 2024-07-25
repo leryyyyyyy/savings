@@ -17,7 +17,11 @@ const Dashboard = () => {
 	// TODO: PUT THIS TO USE THE CHECK USER STATE(IF LOGGED IN OR NOT)
 	const { user } = useContext(AuthContext);
 	if (user === null) {
-		return <Loader />; // ! put loading animation
+		return (
+			<div className="flex items-center justify-center h-screen">
+				<Loader />
+			</div>
+		); // ! put loading animation
 	}
 	if (!user) {
 		return null;
