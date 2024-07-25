@@ -21,7 +21,7 @@ const Reports = () => {
 		<>
 			<Navbar />
 			<Sidebar />
-			<section className="content h-screen">
+			<div className="content h-screen pt-20">
 				<section className="flex justify-between items-center pb-10">
 					<h1 className="f-heading">Reports</h1>
 					<CurrentDate />
@@ -30,7 +30,7 @@ const Reports = () => {
 				<main>
 					<WeeklyView />
 				</main>
-			</section>
+			</div>
 		</>
 	);
 };

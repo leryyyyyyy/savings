@@ -24,7 +24,7 @@ const Navbar = () => {
 	};
 
 	return (
-		<nav className="flex justify-between items-center p-3 bg-dark sticky top-0">
+		<nav className="flex justify-between items-center p-3 bg-dark fixed top-0 left-0 right-0 h-16 z-50">
 			<h1 className="flex-grow text-start justify-center items-center text-sky-50 f-heading">
 				Family Savings
 			</h1>
