@@ -35,6 +35,7 @@ html {
 
 .content {
 	margin-left: 240px; /* Match this with the sidebar width */
+	margin-top: 3rem;
 	padding: 3rem; /*adjusted content padding*/
 	width: calc(100% - 240px); /* Adjust based on sidebar width */
 	background-color: #f9fafb;
