@@ -38,6 +38,7 @@ html {
 	margin-top: 3rem;
 	padding: 3rem; /*adjusted content padding*/
 	width: calc(100% - 240px); /* Adjust based on sidebar width */
+	min-height: 100vh;
 	background-color: #f9fafb;
 }
 

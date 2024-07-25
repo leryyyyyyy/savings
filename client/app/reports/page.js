@@ -11,7 +11,11 @@ import AuthContext from "@/context/AuthContext";
 const Reports = () => {
 	const { user } = useContext(AuthContext);
 	if (user === null) {
-		return <Loader />;
+		return (
+			<div className="flex items-center justify-center h-screen">
+				<Loader />
+			</div>
+		);
 	}
 	if (!user) {
 		return null;
@@ -21,7 +25,7 @@ const Reports = () => {
 		<>
 			<Navbar />
 			<Sidebar />
-			<div className="content h-screen pt-20">
+			<div className="content pt-20">
 				<section className="flex justify-between items-center pb-10">
 					<h1 className="f-heading">Reports</h1>
 					<CurrentDate />
