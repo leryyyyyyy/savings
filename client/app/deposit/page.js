@@ -142,39 +142,56 @@ const Deposit = () => {
 				</section>
 				<Separator />
 				<div>
-					<main className="h-60 p-12 border-2 border-sky-500 bg-sky-50 rounded-md">
-						<div className="flex items-center f-dash">
-							<p className="mr-4 text-2xl font-bold">Member name:</p>
-							<div className="relative w-45" ref={dropdownRef}>
-								<input
-									type="text"
-									value={dropdownValue}
-									onChange={handleInputChange}
-									onClick={() => setShowDropdown(true)}
-									className="border-2 border-gray-800 rounded-md w-full text-xl p-1"
-									placeholder="Select a member..."
-								/>
-								{showDropdown && (
-									<div className="absolute left-0 right-0 bg-white border-2 border-gray-800 mt-1 rounded-md z-10 max-h-60 overflow-y-auto">
-										{filteredMembers.length > 0 ? (
-											filteredMembers.map((member) => (
-												<div
-													key={member._id}
-													className="text-xl cursor-pointer p-2 hover:bg-gray-200"
-													onClick={() => handleSelectMember(member)}
-												>
-													{member.name}
+					<main className="h-72 p-12 border-2 border-sky-500 bg-sky-50 rounded-md">
+						<div className="flex flex-col items-start f-dash">
+							<div className="flex items-center f-dash">
+								<p className="mr-4 text-2xl font-bold">Select week:</p>
+								<div className="relative w-45" ref={dropdownRef}>
+									<input
+										type="text"
+										className="border-2 border-gray-800 rounded-md w-full text-xl p-1"
+										placeholder="Week #"
+									/>
+									{/* <div className="absolute left-0 right-0 bg-white border-2 border-gray-800 mt-1 rounded-md z-10 max-h-60 overflow-y-auto">
+										<div className="p-2 text-gray-500">No matches found</div>
+									</div> */}
+								</div>
+							</div>
+							<div className="flex mt-8">
+								<p className="mr-4 text-2xl font-bold">Member name:</p>
+								<div className="relative w-45" ref={dropdownRef}>
+									<input
+										type="text"
+										value={dropdownValue}
+										onChange={handleInputChange}
+										onClick={() => setShowDropdown(true)}
+										className="border-2 border-gray-800 rounded-md w-full text-xl p-1"
+										placeholder="Select a member..."
+									/>
+									{showDropdown && (
+										<div className="absolute left-0 right-0 bg-white border-2 border-gray-800 mt-1 rounded-md z-10 max-h-60 overflow-y-auto">
+											{filteredMembers.length > 0 ? (
+												filteredMembers.map((member) => (
+													<div
+														key={member._id}
+														className="text-xl cursor-pointer p-2 hover:bg-gray-200"
+														onClick={() => handleSelectMember(member)}
+													>
+														{member.name}
+													</div>
+												))
+											) : (
+												<div className="p-2 text-gray-500">
+													No matches found
 												</div>
-											))
-										) : (
-											<div className="p-2 text-gray-500">No matches found</div>
-										)}
-									</div>
-								)}
+											)}
+										</div>
+									)}
+								</div>
 							</div>
 						</div>
 						{selectedMember && (
-							<div className="f-dash mt-4 justify-center text-xl font-semibold">
+							<div className="f-dash mt-8 justify-center text-xl font-semibold">
 								<p>No. of Body: {selectedMember.numberOfBody}</p>
 								<p>Amount: {amountDeposit * selectedMember.numberOfBody}</p>
 							</div>

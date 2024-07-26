@@ -17,7 +17,27 @@ const WeeklyView = () => {
 				const response = await axios.get(
 					"http://localhost:5000/api/reports/weekly-data"
 				);
-				setWeeks(response.data);
+				const fetchedWeeks = response.data;
+
+				// Get current week
+				const now = new Date();
+				const startOfYear = new Date(now.getFullYear(), 0, 1);
+				const days = Math.floor((now - startOfYear) / (24 * 60 * 60 * 1000));
+				const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+				const currentWeek = { week: weekNumber, year: now.getFullYear() };
+
+				// Sort weeks: current week first, then by year and week number
+				const sortedWeeks = fetchedWeeks.sort((a, b) => {
+					if (a.year === currentWeek.year && a.week === currentWeek.week) {
+						return -1; // Move current week to the top
+					}
+					if (b.year === currentWeek.year && b.week === currentWeek.week) {
+						return 1; // Move current week to the top
+					}
+					return a.year === b.year ? a.week - b.week : a.year - b.year;
+				});
+
+				setWeeks(sortedWeeks);
 				setLoading(false); // Set loading to false once data is fetched
 			} catch (error) {
 				console.error("Error fetching data:", error);
@@ -45,32 +65,30 @@ const WeeklyView = () => {
 	const startIndex = currentPage * weeksPerPage;
 	const currentWeeks = weeks.slice(startIndex, startIndex + weeksPerPage);
 
-	const getCurrentWeek = () => {
-		const now = new Date();
-		const startOfYear = new Date(now.getFullYear(), 0, 1);
-		const days = Math.floor((now - startOfYear) / (24 * 60 * 60 * 1000));
-		const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
-		return { week: weekNumber, year: now.getFullYear() };
-	};
-	const currentWeek = getCurrentWeek();
+	// Get current week outside of useEffect for use in rendering
+	const now = new Date();
+	const startOfYear = new Date(now.getFullYear(), 0, 1);
+	const days = Math.floor((now - startOfYear) / (24 * 60 * 60 * 1000));
+	const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+	const currentWeek = { week: weekNumber, year: now.getFullYear() };
 
 	return (
 		<>
-			<h1 className="font-semibold b-font text-2xl fmb-8">
+			<h1 className="text-2xl font-semibold mb-8">
 				Select a week to view deposit history.
 			</h1>
-			<div className="m-10">
+			<div className="m-12">
 				<div className="flex justify-end mb-10">
 					<div className="space-x-4">
 						<button
-							className="b-font text-white px-4 py-2 bg-sky-500 rounded disabled:bg-gray-400"
+							className="text-white px-4 py-2 bg-sky-500 rounded disabled:bg-gray-400"
 							onClick={() => handlePageChange("prev")}
 							disabled={currentPage === 0}
 						>
 							Previous
 						</button>
 						<button
-							className="b-font text-white px-4 py-2 bg-sky-500 rounded disabled:bg-gray-400"
+							className="text-white px-4 py-2 bg-sky-500 rounded disabled:bg-gray-400"
 							onClick={() => handlePageChange("next")}
 							disabled={startIndex + weeksPerPage >= weeks.length}
 						>
@@ -86,15 +104,15 @@ const WeeklyView = () => {
 				)}
 
 				{/* Weeks Display */}
-				<div className="flex flex-col space-y-10 ">
+				<div className="flex flex-col space-y-10">
 					{currentWeeks.map((week) => (
-						<div key={`${week.year}-${week.week}`} className="relative ">
+						<div key={`${week.year}-${week.week}`} className="relative">
 							<div
-								className={`b-font p-5 font-semibold text-xl cursor-pointer transition-all duration-300 ease-in-out ${
+								className={`p-5 font-bold text-xl cursor-pointer transition duration-300 ease-in-out ${
 									selectedWeek === `${week.year}-${week.week}` ||
 									(week.year === currentWeek.year &&
 										week.week === currentWeek.week)
-										? "bg-sky-600 text-sky-50 rounded-lg hover:shadow-md hover:scale-105"
+										? "bg-sky-600 border-2 text-sky-50 rounded-lg shadow-lg"
 										: "hover:bg-gray-100 hover:scale-105 hover:shadow-md"
 								}`}
 								onClick={() =>
