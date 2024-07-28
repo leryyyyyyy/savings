@@ -38,6 +38,7 @@ const membersList = () => {
         members.name.toLowerCase().includes(searchQuery.toLowerCase())
       )
     );
+    setCurrentPage(1); // Reset to first page when search query changes
   }, [searchQuery, members]);
 
   const handleAddNewMember = () => {
@@ -125,8 +126,8 @@ const membersList = () => {
           />
         </div>
         <div className="h-96 overflow-y-auto bg-white rounded-xl">
-          <table className="table-fixed w-full ">
-            <thead className="border-t-2 bg-light text-sky-700 text-left sticky top-0">
+          <table className="table-fixed w-full">
+            <thead className="border-t-2 bg-light text-sky-700 text-left">
               <tr>
                 <th className="px-4 py-2 border-b-[1px] f-subheading">Name</th>
                 <th className="px-4 py-2 border-b-[1px] f-subheading">
@@ -159,7 +160,7 @@ const membersList = () => {
                     <td className="border-b-[1px] px-4 py-3 f-body text-center">
                       {members.numberOfBody}
                     </td>
-                    <td className="border-b-[1px] px-4 py-3 f-body text-center">
+                    <td className="border-b-[1px] px-4 py-3 f-body">
                       <button
                         onClick={() => handleUpdate(members._id)}
                         className="mr-2 text-xs primary-button hover:primary-button-hover py-1 px-2 rounded"
@@ -174,7 +175,7 @@ const membersList = () => {
                 ))
               ) : (
                 <tr>
-                  <td className="border px-4 py-2" colSpan="4">
+                  <td className="border px-4 py-2" colSpan="5">
                     No members found
                   </td>
                 </tr>
