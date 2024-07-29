@@ -24,7 +24,7 @@ const getWeekDateRange = (date) => {
 };
 
 exports.createDeposit = async (req, res) => {
-  const { memberId, depositAmount } = req.body;
+  const { memberId, depositAmount, numberOfBody } = req.body;
 
   try {
     // Find the member by ID
@@ -55,6 +55,7 @@ exports.createDeposit = async (req, res) => {
     weeklyDeposit.deposits.push({
       memberId: member._id,
       memberName: member.name,
+      numberOfBody,
       depositAmount,
       date: currentDate.toDate(), // Store as Date type
     });
