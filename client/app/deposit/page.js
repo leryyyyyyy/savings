@@ -20,11 +20,13 @@ const Deposit = () => {
   const [isNoMemberModalVisible, setIsNoMemberModalVisible] = useState(false);
   const dropdownRef = useRef(null);
 
+  const [selectedWeek, setSelectedWeek] = useState("");
+
   useEffect(() => {
     const fetchMembers = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/deposit/depositList"
+          `http://localhost:5000/api/deposit/depositList?selectedWeek=${selectedWeek}`
         );
         console.log("Fetched members:", response.data);
         setMembers(response.data);
@@ -35,7 +37,7 @@ const Deposit = () => {
     };
 
     fetchMembers();
-  }, []);
+  }, [selectedWeek]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -66,12 +68,12 @@ const Deposit = () => {
     setSelectedMember(member);
     setDropdownValue(member.name);
     setShowDropdown(false);
-    console.debug("Selected member:", member);
+    // console.debug("Selected member:", member);
     // Log member details
-    console.log(`Selected Member ID: ${member._id}`);
-    console.log(`Name: ${member.name}`);
-    console.log(`No. of Body: ${member.numberOfBody}`);
-    console.log(`Amount: ${amountDeposit * member.numberOfBody}`);
+    // console.log(`Selected Member ID: ${member._id}`);
+    // console.log(`Name: ${member.name}`);
+    // console.log(`No. of Body: ${member.numberOfBody}`);
+    // console.log(`Amount: ${amountDeposit * member.numberOfBody}`);
   };
 
   const handleSave = async () => {
@@ -87,6 +89,7 @@ const Deposit = () => {
       memberId: selectedMember._id,
       depositAmount: amountDeposit * selectedMember.numberOfBody,
       numberOfBody: selectedMember.numberOfBody,
+      selectedWeek,
     };
 
     try {
@@ -147,16 +150,29 @@ const Deposit = () => {
             <div className="flex flex-col items-start f-dash">
               <div className="flex items-center f-dash">
                 <p className="mr-4 text-2xl font-bold">Select week:</p>
-                <div className="relative w-45" ref={dropdownRef}>
+                {/* <div className="relative w-45" ref={dropdownRef}>
                   <input
                     type="text"
                     className="border-2 border-gray-800 rounded-md w-full text-xl p-1"
                     placeholder="Week #"
                   />
-                  {/* <div className="absolute left-0 right-0 bg-white border-2 border-gray-800 mt-1 rounded-md z-10 max-h-60 overflow-y-auto">
+                  <div className="absolute left-0 right-0 bg-white border-2 border-gray-800 mt-1 rounded-md z-10 max-h-60 overflow-y-auto">
 										<div className="p-2 text-gray-500">No matches found</div>
-									</div> */}
-                </div>
+									</div>
+                </div> */}
+                <label htmlFor="weekSelect">Select Week:</label>
+                <select
+                  id="weekSelect"
+                  value={selectedWeek}
+                  onChange={(e) => setSelectedWeek(e.target.value)}
+                >
+                  <option value="">Current Week</option>
+                  {Array.from({ length: 52 }, (_, i) => (
+                    <option key={i + 1} value={i + 1}>
+                      Week {i + 1}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="flex mt-8">
                 <p className="mr-4 text-2xl font-bold">Member name:</p>
