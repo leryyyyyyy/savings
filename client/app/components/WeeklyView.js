@@ -1,146 +1,98 @@
-// "use client";
-// import React, { useState, useEffect } from "react";
-// import axios from "axios";
-// import Loader from "./Loader/Loader"; // Assuming you have a Loader component
-
-// const WeeklyView = () => {
-// 	const [weeks, setWeeks] = useState([]);
-// 	const [selectedWeek, setSelectedWeek] = useState(null);
-// 	const [currentPage, setCurrentPage] = useState(0);
-// 	const [loading, setLoading] = useState(true); // Add loading state
-// 	const weeksPerPage = 4; // Number of weeks to display per page
-
-// 	useEffect(() => {
-// 		const fetchWeeks = async () => {
-// 			try {
-// 				setLoading(true); // Set loading to true when fetching starts
-// 				const response = await axios.get(
-// 					"http://localhost:5000/api/reports/weekly-data"
-// 				);
-// 				const fetchedWeeks = response.data;
-
-// 				// Get current week
-// 				const now = new Date();
-// 				const startOfYear = new Date(now.getFullYear(), 0, 1);
-// 				const days = Math.floor((now - startOfYear) / (24 * 60 * 60 * 1000));
-// 				const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
-// 				const currentWeek = { week: weekNumber, year: now.getFullYear() };
-
-// 				// Sort weeks: current week first, then by year and week number
-// 				const sortedWeeks = fetchedWeeks.sort((a, b) => {
-// 					if (a.year === currentWeek.year && a.week === currentWeek.week) {
-// 						return -1; // Move current week to the top
-// 					}
-// 					if (b.year === currentWeek.year && b.week === currentWeek.week) {
-// 						return 1; // Move current week to the top
-// 					}
-// 					return a.year === b.year ? a.week - b.week : a.year - b.year;
-// 				});
-
-// 				setWeeks(sortedWeeks);
-// 				setLoading(false); // Set loading to false once data is fetched
-// 			} catch (error) {
-// 				console.error("Error fetching data:", error);
-// 				setLoading(false); // Set loading to false in case of an error
-// 			}
-// 		};
-
-// 		fetchWeeks();
-// 	}, []);
-
-// 	const handlePageChange = (direction) => {
-// 		setCurrentPage((prevPage) => {
-// 			if (direction === "prev") {
-// 				return Math.max(prevPage - 1, 0);
-// 			} else if (direction === "next") {
-// 				return Math.min(
-// 					prevPage + 1,
-// 					Math.ceil(weeks.length / weeksPerPage) - 1
-// 				);
-// 			}
-// 			return prevPage;
-// 		});
-// 	};
-
-// 	const startIndex = currentPage * weeksPerPage;
-// 	const currentWeeks = weeks.slice(startIndex, startIndex + weeksPerPage);
-
-// 	// Get current week outside of useEffect for use in rendering
-// 	const now = new Date();
-// 	const startOfYear = new Date(now.getFullYear(), 0, 1);
-// 	const days = Math.floor((now - startOfYear) / (24 * 60 * 60 * 1000));
-// 	const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
-// 	const currentWeek = { week: weekNumber, year: now.getFullYear() };
-
 "use client";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Loader from "./Loader/Loader"; // Assuming you have a Loader component
+import Loader from "./Loader/Loader";
 
 const WeeklyView = () => {
 	const [weeks, setWeeks] = useState([]);
 	const [selectedWeek, setSelectedWeek] = useState(null);
 	const [currentPage, setCurrentPage] = useState(0);
-	const [loading, setLoading] = useState(true); // Add loading state
-	const weeksPerPage = 4; // Number of weeks to display per page
+	const [loading, setLoading] = useState(true);
+	const weeksPerPage = 4;
 
 	useEffect(() => {
 		const fetchWeeks = async () => {
 			try {
-				setLoading(true); // Set loading to true when fetching starts
+				setLoading(true);
 				const response = await axios.get(
 					"http://localhost:5000/api/reports/weekly-data"
 				);
-				const fetchedWeeks = response.data.map((week) => {
-					const date = new Date(week.date);
-					week.date = date.toLocaleString("en-US", { timeZone: "Asia/Manila" });
-					return week;
-				});
+				const fetchedWeeks = response.data;
 
 				// Get current week
-				const now = new Date("2024-08-05T00:00:00");
-
-				// Adjust the week number calculation to shift to the next week if it is Monday 12 AM
-				const startOfYear = new Date(now.getFullYear(), 0, 1);
-				const days = Math.floor((now - startOfYear) / (24 * 60 * 60 * 1000));
-				let weekNumber = Math.ceil((days + startOfYear.getDay() - 1) / 7);
-
-				// Check if it is Monday 12 AM and shift to the next week
-				if (
-					now.getDay() === 1 &&
-					now.getHours() === 0 &&
-					now.getMinutes() === 0
-				) {
-					weekNumber += 1;
-				}
-
-				const currentWeek = { week: weekNumber, year: now.getFullYear() };
-				console.log("Current Date:", now);
-				console.log("Start of Year:", startOfYear);
-				console.log("Days since start of year:", days);
-				console.log("Calculated Week Number:", weekNumber);
+				const now = new Date();
+				// const now = new Date("2024-07-29T23:59:00");
+				const nowInManila = new Date(
+					new Intl.DateTimeFormat("en-US", {
+						timeZone: "Asia/Manila",
+						year: "numeric",
+						month: "2-digit",
+						day: "2-digit",
+						hour: "2-digit",
+						minute: "2-digit",
+						second: "2-digit",
+						hour12: false,
+					}).format(now)
+				);
+				const startOfYear = new Date(nowInManila.getFullYear(), 0, 1);
+				const days = Math.floor(
+					(nowInManila - startOfYear) / (24 * 60 * 60 * 1000)
+				);
+				const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+				const currentWeek = {
+					week: weekNumber,
+					year: nowInManila.getFullYear(),
+				};
 
 				// Sort weeks: current week first, then by year and week number
 				const sortedWeeks = fetchedWeeks.sort((a, b) => {
 					if (a.year === currentWeek.year && a.week === currentWeek.week) {
-						return -1; // Move current week to the top
+						return -1;
 					}
 					if (b.year === currentWeek.year && b.week === currentWeek.week) {
-						return 1; // Move current week to the top
+						return 1;
 					}
 					return a.year === b.year ? a.week - b.week : a.year - b.year;
 				});
-
 				setWeeks(sortedWeeks);
-				setLoading(false); // Set loading to false once data is fetched
+				setLoading(false);
 			} catch (error) {
 				console.error("Error fetching data:", error);
-				setLoading(false); // Set loading to false in case of an error
+				setLoading(false);
 			}
 		};
 
 		fetchWeeks();
 	}, []);
+
+	const startIndex = currentPage * weeksPerPage;
+	const currentWeeks = weeks.slice(startIndex, startIndex + weeksPerPage);
+
+	// Get current week
+	const now = new Date();
+	console.log(now);
+	const nowInManila = new Date(
+		new Intl.DateTimeFormat("en-US", {
+			timeZone: "Asia/Manila",
+			year: "numeric",
+			month: "2-digit",
+			day: "2-digit",
+			hour: "2-digit",
+			minute: "2-digit",
+			second: "2-digit",
+			hour12: false,
+		}).format(now)
+	);
+	const startOfYear = new Date(nowInManila.getFullYear(), 0, 1);
+	const days = Math.floor((nowInManila - startOfYear) / (24 * 60 * 60 * 1000));
+	const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+	const currentWeek = {
+		week: weekNumber,
+		year: nowInManila.getFullYear(),
+	};
+
+	console.log("Current Date:", nowInManila);
+	console.log("Calculated Week Number:", weekNumber);
 
 	const handlePageChange = (direction) => {
 		setCurrentPage((prevPage) => {
@@ -155,17 +107,6 @@ const WeeklyView = () => {
 			return prevPage;
 		});
 	};
-
-	const startIndex = currentPage * weeksPerPage;
-	const currentWeeks = weeks.slice(startIndex, startIndex + weeksPerPage);
-
-	// Get current week outside of useEffect for use in rendering
-	const now = new Date();
-	const startOfYear = new Date(now.getFullYear(), 0, 1);
-	const days = Math.floor((now - startOfYear) / (24 * 60 * 60 * 1000));
-	const weekNumber = Math.ceil((days + startOfYear.getDay() - 1) / 7);
-	const currentWeek = { week: weekNumber, year: now.getFullYear() };
-
 	return (
 		<>
 			<h1 className="text-2xl font-semibold mb-8">
