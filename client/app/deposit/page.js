@@ -1,4 +1,5 @@
 "use client";
+
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import Separator from "../components/Separator";
@@ -7,6 +8,27 @@ import Loader from "../components/Loader/Loader";
 import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
 import AuthContext from "@/context/AuthContext";
+
+const formatDate = (date) => {
+	const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+	const day = String(date.getUTCDate()).padStart(2, "0");
+	return `${month}-${day}`;
+};
+
+const getWeekRange = (year, weekNumber) => {
+	const startOfYear = new Date(Date.UTC(year, 0, 1));
+	const dayOfWeek = startOfYear.getUTCDay();
+	const daysUntilMonday = (1 - dayOfWeek + 7) % 7; // 1 = Monday
+	const startOfWeek = new Date(startOfYear);
+	startOfWeek.setUTCDate(startOfYear.getUTCDate() + daysUntilMonday);
+	startOfWeek.setUTCDate(startOfWeek.getUTCDate() + (weekNumber - 1) * 7);
+	const endOfWeek = new Date(startOfWeek);
+	endOfWeek.setUTCDate(startOfWeek.getUTCDate() + 6);
+	return {
+		startDate: formatDate(startOfWeek),
+		endDate: formatDate(endOfWeek),
+	};
+};
 
 const Deposit = () => {
 	const [members, setMembers] = useState([]);
@@ -134,6 +156,19 @@ const Deposit = () => {
 		return null;
 	}
 
+	const now = new Date();
+	const currentYear = now.getUTCFullYear();
+	const currentWeek =
+		Math.floor(
+			(now.getTime() - new Date(Date.UTC(currentYear, 0, 1)).getTime()) /
+				(24 * 60 * 60 * 1000 * 7)
+		) + 1;
+
+	const { startDate: currentStartDate, endDate: currentEndDate } = getWeekRange(
+		currentYear,
+		currentWeek
+	);
+
 	return (
 		<>
 			<Navbar />
@@ -161,12 +196,22 @@ const Deposit = () => {
 										value={selectedWeek}
 										onChange={(e) => setSelectedWeek(e.target.value)}
 									>
-										<option value="">Current Week</option>
-										{Array.from({ length: 52 }, (_, i) => (
-											<option key={i + 1} value={i + 1}>
-												Week {i + 1}
-											</option>
-										))}
+										<option value="">
+											Current Week {currentWeek} ({currentStartDate} -{" "}
+											{currentEndDate})
+										</option>
+										{Array.from({ length: 52 }, (_, i) => {
+											const weekNumber = i + 1;
+											const { startDate, endDate } = getWeekRange(
+												currentYear,
+												weekNumber
+											);
+											return (
+												<option key={weekNumber} value={weekNumber}>
+													Week {weekNumber} ({startDate} - {endDate})
+												</option>
+											);
+										})}
 									</select>
 								</div>
 							</div>
@@ -221,7 +266,7 @@ const Deposit = () => {
 					</button>
 				</div>
 				{isSuccessModalVisible && (
-					<div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
 						<div className="bg-white p-20 rounded-md">
 							<h2 className="text-xl text-green-600 font-bold mb-4">
 								Record Successful!
