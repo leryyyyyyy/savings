@@ -91,10 +91,10 @@ const Deposit = () => {
 		setDropdownValue(member.name);
 		setShowDropdown(false);
 
-		console.log(`Selected Member ID: ${member._id}`);
-		console.log(`Name: ${member.name}`);
-		console.log(`No. of Body: ${member.numberOfBody}`);
-		console.log(`Amount: ${amountDeposit * member.numberOfBody}`);
+		// console.log(`Selected Member ID: ${member._id}`);
+		// console.log(`Name: ${member.name}`);
+		// console.log(`No. of Body: ${member.numberOfBody}`);
+		// console.log(`Amount: ${amountDeposit * member.numberOfBody}`);
 	};
 
 	const handleSave = async () => {

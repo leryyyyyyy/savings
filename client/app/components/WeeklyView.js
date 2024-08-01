@@ -28,7 +28,7 @@ const WeeklyView = () => {
 	};
 
 	const currentWeek = getCurrentWeek();
-	console.log(currentWeek);
+
 
 	useEffect(() => {
 		const fetchWeeks = async () => {
