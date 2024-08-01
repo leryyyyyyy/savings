@@ -24,7 +24,7 @@ const getWeekDateRange = (date) => {
 };
 
 exports.createDeposit = async (req, res) => {
-  const { memberId, depositAmount } = req.body;
+  const { memberId, depositAmount, numberOfBody, selectedWeek } = req.body;
 
   try {
     // Find the member by ID
@@ -36,7 +36,10 @@ exports.createDeposit = async (req, res) => {
     // Calculate the week and year in the Philippines time zone
     const currentDate = moment().tz("Asia/Manila");
     const year = moment().tz("Asia/Manila").year();
-    const week = getWeekOfYear(currentDate); // Use getWeekOfYear to calculate the week
+    // const week = getWeekOfYear(currentDate); // Use getWeekOfYear to calculate the week
+    const week = selectedWeek
+      ? parseInt(selectedWeek)
+      : getWeekOfYear(currentDate);
     const { startDate, endDate } = getWeekDateRange(currentDate);
 
     // Find or create the weekly deposit document
@@ -55,6 +58,7 @@ exports.createDeposit = async (req, res) => {
     weeklyDeposit.deposits.push({
       memberId: member._id,
       memberName: member.name,
+      numberOfBody,
       depositAmount,
       date: currentDate.toDate(), // Store as Date type
     });
@@ -73,15 +77,17 @@ exports.createDeposit = async (req, res) => {
 
 exports.getMembersWithoutDeposit = async (req, res) => {
   try {
-    // Calculate the current week in the Philippines time zone
+    const { selectedWeek } = req.query; // Get the selected week from query parameters
     const currentDate = moment().tz("Asia/Manila");
     const year = currentDate.year();
-    const week = getWeekOfYear(currentDate); // Use getWeekOfYear to calculate the week
+    const week = selectedWeek
+      ? parseInt(selectedWeek)
+      : getWeekOfYear(currentDate); // Use selected week or current week
 
-    // Fetch the weekly deposits for the current week
+    // Fetch the weekly deposits for the specified week
     const weeklyDeposit = await WeeklyDeposit.findOne({ year, week });
 
-    // If there are no deposits for the current week, all members are without deposits
+    // If there are no deposits for the specified week, all members are without deposits
     if (!weeklyDeposit) {
       const members = await Member.find();
       return res.status(200).json(members);
@@ -92,7 +98,7 @@ exports.getMembersWithoutDeposit = async (req, res) => {
       deposit.memberId.toString()
     );
 
-    // Fetch members who haven't made a deposit in the current week
+    // Fetch members who haven't made a deposit in the specified week
     const membersWithoutDeposits = await Member.find({
       _id: { $nin: membersWithDeposits },
     });

@@ -33,6 +33,7 @@ exports.getWeeklyData = async (req, res) => {
           memberId: d.memberId.toString(),
           memberName: d.memberName,
           depositAmount: d.depositAmount,
+          numberOfBody: d.numberOfBody, // Include numberOfBody
           date: moment(d.date)
             .tz("Asia/Manila")
             .format("MMMM Do YYYY, h:mm:ss a"), // Format date to 12-hour format
