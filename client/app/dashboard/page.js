@@ -42,6 +42,9 @@ const Dashboard = () => {
 	const reports = () => {
 		router.push("/reports");
 	};
+	const loan = () => {
+		router.push("/loan");
+	};
 	return (
 		<>
 			<Navbar />
@@ -67,6 +70,12 @@ const Dashboard = () => {
 						className="dash-nav py-20 text-2xl font-bold flex items-center justify-center flex-1 h-full hover:dash-nav-hover hover:scale-105 hover:shadow-lg"
 					>
 						<p>Deposit for this week</p>
+					</div>
+					<div
+						onClick={loan}
+						className="dash-nav py-20 text-2xl font-bold flex items-center justify-center flex-1 h-full  hover:dash-nav-hover hover:scale-105 hover:shadow-lg"
+					>
+						<p> loan</p>
 					</div>
 					<div
 						onClick={reports}
