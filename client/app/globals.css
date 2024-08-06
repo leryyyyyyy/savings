@@ -35,11 +35,12 @@ html {
 
 .content {
 	margin-left: 240px; /* Match this with the sidebar width */
-	margin-top: 3rem;
-	padding: 3rem; /*adjusted content padding*/
+	padding: 6rem 3rem 0 3rem;
 	width: calc(100% - 240px); /* Adjust based on sidebar width */
 	min-height: 100vh;
 	background-color: #f9fafb;
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 
 @layer utilities {

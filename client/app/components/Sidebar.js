@@ -19,7 +19,7 @@ const Sidebar = () => {
 	const isActive = (path) => pathname === path;
 	return (
 		<div className="w-60 h-screen bg-dark text-gray-100 fixed">
-			<div className="p-4">
+			<div className="p-4 mt-12">
 				<nav className="space-y-2">
 					<div className="flex justify-center mb-5">
 						<svg
