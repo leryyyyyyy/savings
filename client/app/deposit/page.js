@@ -189,7 +189,7 @@ const Deposit = () => {
 				<Separator />
 
 				<h1 className="f-heading pb-8">Deposit</h1>
-				<main className="h-72 p-12 border-2 border-sky-500 bg-sky-50 rounded-md">
+				<main className="h-auto p-12 border-2 border-sky-500 bg-sky-50 rounded-md">
 					<div className="flex flex-col items-start f-dash mb-10">
 						<div className="flex items-center f-dash">
 							<label htmlFor="weekSelect" className="mr-10 text-2xl font-bold">
@@ -252,13 +252,15 @@ const Deposit = () => {
 							</div>
 						</div>
 					</div>
-
 					{selectedMember && (
-						<div className="f-dash mt-8 justify-center text-xl font-semibold">
-							<h3>Summary:</h3>
-							<p>Member name: {selectedMember.name}</p>
-							<p>No. of Body: {selectedMember.numberOfBody}</p>
-							<p>Amount: {amountDeposit * selectedMember.numberOfBody}</p>
+						<div className="f-dash mt-8 justify-center">
+							<Separator />
+							<h3 className="text-2xl pb-3 text-semibold">Summary:</h3>
+							<div className="b-font text-lg">
+								<p>Member name: {selectedMember.name}</p>
+								<p>No. of Body: {selectedMember.numberOfBody}</p>
+								<p>Amount: {amountDeposit * selectedMember.numberOfBody}</p>
+							</div>
 						</div>
 					)}
 				</main>
@@ -274,26 +276,29 @@ const Deposit = () => {
 
 				{confirmationVisible && (
 					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-						<div className="bg-white p-20 rounded-md">
-							<h2 className="text-xl text-green-600 font-bold mb-4">
+						<div className="bg-white p-10 rounded-md b-font">
+							<h2 className="text-2xl font-bold">
 								You are about to record the following information:
 							</h2>
-							<p>Member name: {selectedMember.name}</p>
-							<p>No. of Body: {selectedMember.numberOfBody}</p>
-							<p>Amount: {amountDeposit * selectedMember.numberOfBody}</p>
-							<button
-								onClick={handleCancel}
-								className="warning-button hover:warning-button-hover"
-							>
-								Cancel
-							</button>
-
-							<button
-								onClick={handleConfirmSave}
-								className="paid-button hover:paid-button-hover"
-							>
-								Proceed
-							</button>
+							<div className="text-lg font-semibold py-5">
+								<p>Member name: {selectedMember.name}</p>
+								<p>No. of Body: {selectedMember.numberOfBody}</p>
+								<p>Amount: {amountDeposit * selectedMember.numberOfBody}</p>
+							</div>
+							<div className="flex justify-between">
+								<button
+									onClick={handleCancel}
+									className="text-lg warning-button hover:warning-button-hover"
+								>
+									Cancel
+								</button>
+								<button
+									onClick={handleConfirmSave}
+									className="text-lg paid-button hover:paid-button-hover"
+								>
+									Proceed
+								</button>
+							</div>
 						</div>
 					</div>
 				)}
