@@ -38,6 +38,8 @@ const Deposit = () => {
 	const [dropdownValue, setDropdownValue] = useState("");
 	const [showDropdown, setShowDropdown] = useState(false);
 	const amountDeposit = 300;
+	const [submissionData, setSubmissionData] = useState({});
+	const [confirmationVisible, setConfirmationVisible] = useState(false);
 	const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
 	const [isErrorModalVisible, setIsErrorModalVisible] = useState(false);
 	const [isNoMemberModalVisible, setIsNoMemberModalVisible] = useState(false);
@@ -91,11 +93,6 @@ const Deposit = () => {
 		setSelectedMember(member);
 		setDropdownValue(member.name);
 		setShowDropdown(false);
-
-		// console.log(`Selected Member ID: ${member._id}`);
-		// console.log(`Name: ${member.name}`);
-		// console.log(`No. of Body: ${member.numberOfBody}`);
-		// console.log(`Amount: ${amountDeposit * member.numberOfBody}`);
 	};
 
 	const handleSave = async () => {
@@ -103,7 +100,7 @@ const Deposit = () => {
 			setIsNoMemberModalVisible(true);
 			setTimeout(() => {
 				setIsNoMemberModalVisible(false);
-			}, 2000); // Delay for 2 seconds
+			}, 2000);
 			return;
 		}
 
@@ -113,13 +110,18 @@ const Deposit = () => {
 			numberOfBody: selectedMember.numberOfBody,
 			selectedWeek,
 		};
+		setSubmissionData(submissionData);
+		setConfirmationVisible(true);
+	};
 
+	const handleConfirmSave = async () => {
 		try {
 			const response = await axios.post(
 				"http://localhost:5000/api/deposit/addDeposit",
 				submissionData
 			);
 
+			console.log(submissionData);
 			setIsSuccessModalVisible(true);
 			setTimeout(() => {
 				setIsSuccessModalVisible(false);
@@ -132,9 +134,14 @@ const Deposit = () => {
 			setTimeout(() => {
 				setIsErrorModalVisible(false);
 			}, 2000);
+		} finally {
+			setConfirmationVisible(false);
 		}
 	};
 
+	const handleCancel = () => {
+		setConfirmationVisible(false);
+	};
 	const resetForm = () => {
 		setSelectedMember(null);
 		setDropdownValue("");
@@ -248,6 +255,8 @@ const Deposit = () => {
 
 					{selectedMember && (
 						<div className="f-dash mt-8 justify-center text-xl font-semibold">
+							<h3>Summary:</h3>
+							<p>Member name: {selectedMember.name}</p>
 							<p>No. of Body: {selectedMember.numberOfBody}</p>
 							<p>Amount: {amountDeposit * selectedMember.numberOfBody}</p>
 						</div>
@@ -262,6 +271,33 @@ const Deposit = () => {
 						Save
 					</button>
 				</div>
+
+				{confirmationVisible && (
+					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+						<div className="bg-white p-20 rounded-md">
+							<h2 className="text-xl text-green-600 font-bold mb-4">
+								You are about to record the following information:
+							</h2>
+							<p>Member name: {selectedMember.name}</p>
+							<p>No. of Body: {selectedMember.numberOfBody}</p>
+							<p>Amount: {amountDeposit * selectedMember.numberOfBody}</p>
+							<button
+								onClick={handleCancel}
+								className="warning-button hover:warning-button-hover"
+							>
+								Cancel
+							</button>
+
+							<button
+								onClick={handleConfirmSave}
+								className="paid-button hover:paid-button-hover"
+							>
+								Proceed
+							</button>
+						</div>
+					</div>
+				)}
+
 				{isSuccessModalVisible && (
 					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
 						<div className="bg-white p-20 rounded-md">
@@ -272,7 +308,7 @@ const Deposit = () => {
 					</div>
 				)}
 				{isErrorModalVisible && (
-					<div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
 						<div className="bg-white p-20 rounded-md">
 							<h2 className="text-xl text-red-600 font-bold mb-4">
 								Error Occurred
@@ -282,7 +318,7 @@ const Deposit = () => {
 					</div>
 				)}
 				{isNoMemberModalVisible && (
-					<div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
 						<div className="bg-white p-20 rounded-md">
 							<h2 className="text-xl text-red-600 font-bold mb-4">
 								No Member Selected
