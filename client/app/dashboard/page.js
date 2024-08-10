@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import Navbar from "../components/Navbar";
-// import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import Total from "../components/Total";
 import CurrentDate from "../components/CurrentDate";
