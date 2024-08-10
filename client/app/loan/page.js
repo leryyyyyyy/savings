@@ -22,6 +22,11 @@ const Loan = () => {
 	const guarantorDropdownRef = useRef(null);
 	const [selectedGuarantor, setSelectedGuarantor] = useState(null);
 	const [amount, setAmount] = useState("");
+	const [submissionData, setSubmissionData] = useState({});
+	const [confirmationVisible, setConfirmationVisible] = useState(false);
+	const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
+	const [isErrorModalVisible, setIsErrorModalVisible] = useState(false);
+	const [isNoMemberModalVisible, setIsNoMemberModalVisible] = useState(false);
 
 	useEffect(() => {
 		const fetchMembers = async () => {
@@ -138,6 +143,66 @@ const Loan = () => {
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
 	}, []);
+
+	const handleSave = async () => {
+		if (!selectedMember) {
+			setIsNoMemberModalVisible(true);
+			setTimeout(() => {
+				setIsNoMemberModalVisible(false);
+			}, 2000);
+			return;
+		}
+
+		//! Modify submission data
+		const submissionData = {
+			borrowerId: selectedMember._id,
+			borrowerName: selectedMember.name,
+			guarantorId: selectedGuarantor?._id || null,
+			guarantorName: selectedGuarantor?.name || null,
+			amount: amount,
+			date: new Date().toISOString().split("T")[0], // Date in YYYY-MM-DD format
+		};
+		setSubmissionData(submissionData);
+		setConfirmationVisible(true);
+	};
+
+	const handleConfirmSave = async () => {
+		try {
+			const response = await axios.post(
+				"http://localhost:5000/api/deposit/addDeposit",
+				submissionData
+			);
+
+			console.log(submissionData);
+			setIsSuccessModalVisible(true);
+			setTimeout(() => {
+				setIsSuccessModalVisible(false);
+				resetForm();
+				window.location.reload();
+			}, 2000);
+		} catch (error) {
+			console.error("Error saving record:", error);
+			setIsErrorModalVisible(true);
+			setTimeout(() => {
+				setIsErrorModalVisible(false);
+			}, 2000);
+		} finally {
+			setConfirmationVisible(false);
+		}
+	};
+
+	const handleCancel = () => {
+		setConfirmationVisible(false);
+	};
+	const resetForm = () => {
+		setSelectedMember(null);
+		setDropdownValue("");
+		setFilteredMembers(members);
+	};
+
+	const handleCloseErrorModal = () => {
+		setIsErrorModalVisible(false);
+	};
 
 	const { user } = useContext(AuthContext);
 	if (user === null) {
@@ -257,10 +322,74 @@ const Loan = () => {
 				</main>
 
 				<div className="flex justify-end">
-					<button className="primary-button hover:primary-button-hover mt-10">
+					<button
+						onClick={handleSave}
+						className="primary-button hover:primary-button-hover mt-10"
+					>
 						Save
 					</button>
 				</div>
+
+				{confirmationVisible && (
+					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+						<div className="bg-white p-10 rounded-md b-font">
+							<h2 className="text-2xl font-bold">
+								You are about to record the following information:
+							</h2>
+							<div className="text-lg font-semibold py-5">
+								<p> Borrower: {selectedMember ? selectedMember.name : ""}</p>
+								<p>
+									Guarantor: {selectedGuarantor ? selectedGuarantor.name : ""}
+								</p>
+								<p>Amount: {amount ? `P${amount}` : " "}</p>
+							</div>
+							<div className="flex justify-between">
+								<button
+									onClick={handleCancel}
+									className="text-lg warning-button hover:warning-button-hover"
+								>
+									Cancel
+								</button>
+								<button
+									onClick={handleConfirmSave}
+									className="text-lg paid-button hover:paid-button-hover"
+								>
+									Proceed
+								</button>
+							</div>
+						</div>
+					</div>
+				)}
+
+				{isSuccessModalVisible && (
+					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+						<div className="bg-white p-20 rounded-md">
+							<h2 className="text-xl text-green-600 font-bold mb-4">
+								Record Successful!
+							</h2>
+						</div>
+					</div>
+				)}
+				{isErrorModalVisible && (
+					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+						<div className="bg-white p-20 rounded-md">
+							<h2 className="text-xl text-red-600 font-bold mb-4">
+								Error Occurred
+							</h2>
+							<p className="mb-4">Data not saved. Please try again.</p>
+						</div>
+					</div>
+				)}
+				{isNoMemberModalVisible && (
+					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+						<div className="bg-white p-20 rounded-md">
+							<h2 className="text-xl text-red-600 font-bold mb-4">
+								No Member Selected
+							</h2>
+							<p className="mb-4">Please select a member before saving.</p>
+						</div>
+					</div>
+				)}
 			</div>
 		</>
 	);
