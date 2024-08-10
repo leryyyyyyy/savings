@@ -1,11 +1,13 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
+import Loader from "../components/Loader/Loader";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import Separator from "../components/Separator";
 import Total from "../components/Total";
 import CurrentDate from "../components/CurrentDate";
 import axios from "axios";
+import AuthContext from "@/context/AuthContext";
 
 const Loan = () => {
 	const [members, setMembers] = useState([]);
@@ -137,6 +139,18 @@ const Loan = () => {
 		};
 	}, []);
 
+	const { user } = useContext(AuthContext);
+	if (user === null) {
+		return (
+			<div className="flex items-center justify-center h-screen">
+				<Loader />
+			</div>
+		);
+	}
+	if (!user) {
+		return null;
+	}
+
 	return (
 		<>
 			<Navbar />
@@ -148,7 +162,6 @@ const Loan = () => {
 				</section>
 				<Separator />
 				<h1 className="f-heading pb-8">Loan</h1>
-
 				<main className="h-auto p-8 border-2 border-sky-500 bg-sky-50 rounded-md b-font">
 					<div className="flex justify-between f-dash mb-10 mt-5 b-font ">
 						<div className="flex">
