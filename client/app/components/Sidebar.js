@@ -1,9 +1,14 @@
 import React, { useContext } from "react";
 import AuthContext from "@/context/AuthContext";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Loader from "../components/Loader/Loader.js";
 
 const Sidebar = () => {
+  const router = useRouter();
+
+  const handleNavigation = (path) => {
+    router.push(path);
+  };
   const { user } = useContext(AuthContext);
   if (user === null) {
     return (
@@ -19,7 +24,7 @@ const Sidebar = () => {
   const isActive = (path) => pathname === path;
   return (
     <div className="w-60 h-screen bg-dark text-gray-100 fixed">
-      <div className="p-4">
+      <div className="p-4 mt-12">
         <nav className="space-y-2">
           <div className="flex justify-center mb-5">
             <svg
@@ -39,6 +44,7 @@ const Sidebar = () => {
           </div>
           <a
             href="/dashboard"
+            onClick={() => handleNavigation("/dashboard")}
             className={`${
               isActive("/dashboard") ? "bg-sky-800 shadow-lg" : ""
             } flex px-2 py-1 rounded-lg text-pink-50 font-headings text-lg font-medium hover:bg-sky-100 hover:text-sky-600`}
@@ -61,6 +67,7 @@ const Sidebar = () => {
           </a>
           <a
             href="/deposit"
+            onClick={() => handleNavigation("/deposit")}
             className={`${
               isActive("/deposit") ? "bg-sky-800 shadow-lg" : ""
             } flex px-2 py-1 rounded-lg text-pink-50 font-headings text-lg font-medium hover:bg-sky-100 hover:text-sky-600`}
@@ -83,6 +90,7 @@ const Sidebar = () => {
           </a>
           <a
             href="/loan"
+            onClick={() => handleNavigation("/loan")}
             className={`${
               isActive("/loan") ? "bg-sky-800 shadow-lg" : ""
             } flex px-2 py-1 rounded-lg text-pink-50 font-headings text-lg font-medium hover:bg-sky-100 hover:text-sky-600`}
@@ -105,6 +113,7 @@ const Sidebar = () => {
           </a>
           <a
             href="/members"
+            onClick={() => handleNavigation("/members")}
             className={`${
               isActive("/members") ? "bg-sky-800 shadow-lg" : ""
             } flex px-2 py-1 rounded-lg text-pink-50 font-headings text-lg font-medium hover:bg-sky-100 hover:text-sky-600`}
@@ -127,6 +136,7 @@ const Sidebar = () => {
           </a>
           <a
             href="/reports"
+            onClick={() => handleNavigation("/reports")}
             className={`${
               isActive("/reports") ? "bg-sky-800 shadow-lg" : ""
             } flex px-2 py-1 rounded-lg text-pink-50 font-headings text-lg font-medium hover:bg-sky-100 hover:text-sky-600`}
