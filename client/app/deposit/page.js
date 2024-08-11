@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import Separator from "../components/Separator";
 import CurrentDate from "../components/CurrentDate";
+import Total from "../components/Total";
 import Loader from "../components/Loader/Loader";
 import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
@@ -37,6 +38,8 @@ const Deposit = () => {
 	const [dropdownValue, setDropdownValue] = useState("");
 	const [showDropdown, setShowDropdown] = useState(false);
 	const amountDeposit = 300;
+	const [submissionData, setSubmissionData] = useState({});
+	const [confirmationVisible, setConfirmationVisible] = useState(false);
 	const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
 	const [isErrorModalVisible, setIsErrorModalVisible] = useState(false);
 	const [isNoMemberModalVisible, setIsNoMemberModalVisible] = useState(false);
@@ -90,11 +93,6 @@ const Deposit = () => {
 		setSelectedMember(member);
 		setDropdownValue(member.name);
 		setShowDropdown(false);
-
-		// console.log(`Selected Member ID: ${member._id}`);
-		// console.log(`Name: ${member.name}`);
-		// console.log(`No. of Body: ${member.numberOfBody}`);
-		// console.log(`Amount: ${amountDeposit * member.numberOfBody}`);
 	};
 
 	const handleSave = async () => {
@@ -102,7 +100,7 @@ const Deposit = () => {
 			setIsNoMemberModalVisible(true);
 			setTimeout(() => {
 				setIsNoMemberModalVisible(false);
-			}, 2000); // Delay for 2 seconds
+			}, 2000);
 			return;
 		}
 
@@ -112,13 +110,18 @@ const Deposit = () => {
 			numberOfBody: selectedMember.numberOfBody,
 			selectedWeek,
 		};
+		setSubmissionData(submissionData);
+		setConfirmationVisible(true);
+	};
 
+	const handleConfirmSave = async () => {
 		try {
 			const response = await axios.post(
 				"http://localhost:5000/api/deposit/addDeposit",
 				submissionData
 			);
 
+			console.log(submissionData);
 			setIsSuccessModalVisible(true);
 			setTimeout(() => {
 				setIsSuccessModalVisible(false);
@@ -131,9 +134,14 @@ const Deposit = () => {
 			setTimeout(() => {
 				setIsErrorModalVisible(false);
 			}, 2000);
+		} finally {
+			setConfirmationVisible(false);
 		}
 	};
 
+	const handleCancel = () => {
+		setConfirmationVisible(false);
+	};
 	const resetForm = () => {
 		setSelectedMember(null);
 		setDropdownValue("");
@@ -175,88 +183,88 @@ const Deposit = () => {
 			<Sidebar />
 			<div className="content h-screen">
 				<section className="flex justify-between items-center pb-10">
-					<h1 className="f-heading">Deposit</h1>
+					<Total />
 					<CurrentDate />
 				</section>
 				<Separator />
-				<div>
-					<main className="h-72 p-12 border-2 border-sky-500 bg-sky-50 rounded-md">
-						<div className="flex flex-col items-start f-dash mb-10">
-							<div className="flex items-center f-dash">
-								<label
-									htmlFor="weekSelect"
-									className="mr-10 text-2xl font-bold"
+
+				<h1 className="f-heading pb-8">Deposit</h1>
+				<main className="h-auto p-12 border-2 border-sky-500 bg-sky-50 rounded-md">
+					<div className="flex flex-col items-start f-dash mb-10">
+						<div className="flex items-center f-dash">
+							<label htmlFor="weekSelect" className="mr-10 text-2xl font-bold">
+								Select Week:
+							</label>
+							<div className="relative w-64">
+								<select
+									className="border-2 border-gray-800 rounded-md w-full text-xl p-1"
+									id="weekSelect"
+									value={selectedWeek}
+									onChange={(e) => setSelectedWeek(e.target.value)}
 								>
-									Select Week:
-								</label>
-								<div className="relative w-64">
-									<select
-										className="border-2 border-gray-800 rounded-md w-full text-xl p-1"
-										id="weekSelect"
-										value={selectedWeek}
-										onChange={(e) => setSelectedWeek(e.target.value)}
-									>
-										<option value="">
-											Current Week {currentWeek} ({currentStartDate} -{" "}
-											{currentEndDate})
-										</option>
-										{Array.from({ length: 52 }, (_, i) => {
-											const weekNumber = i + 1;
-											const { startDate, endDate } = getWeekRange(
-												currentYear,
-												weekNumber
-											);
-											return (
-												<option key={weekNumber} value={weekNumber}>
-													Week {weekNumber} ({startDate} - {endDate})
-												</option>
-											);
-										})}
-									</select>
-								</div>
-							</div>
-							<div className="flex mt-5">
-								<p className="mr-4 text-2xl font-bold">Member name:</p>
-								<div className="relative w-45" ref={dropdownRef}>
-									<input
-										type="text"
-										value={dropdownValue}
-										onChange={handleInputChange}
-										onClick={() => setShowDropdown(true)}
-										className="border-2 border-gray-800 rounded-md w-full text-xl p-1"
-										placeholder="Select a member..."
-									/>
-									{showDropdown && (
-										<div className="absolute left-0 right-0 bg-white border-2 border-gray-800 rounded-md z-10 max-h-60 overflow-y-auto">
-											{filteredMembers.length > 0 ? (
-												filteredMembers.map((member) => (
-													<div
-														key={member._id}
-														className="text-xl cursor-pointer p-2 hover:bg-gray-200"
-														onClick={() => handleSelectMember(member)}
-													>
-														{member.name}
-													</div>
-												))
-											) : (
-												<div className="p-2 text-gray-500">
-													No matches found
-												</div>
-											)}
-										</div>
-									)}
-								</div>
+									<option value="">
+										Current Week {currentWeek} ({currentStartDate} -{" "}
+										{currentEndDate})
+									</option>
+									{Array.from({ length: 52 }, (_, i) => {
+										const weekNumber = i + 1;
+										const { startDate, endDate } = getWeekRange(
+											currentYear,
+											weekNumber
+										);
+										return (
+											<option key={weekNumber} value={weekNumber}>
+												Week {weekNumber} ({startDate} - {endDate})
+											</option>
+										);
+									})}
+								</select>
 							</div>
 						</div>
-
-						{selectedMember && (
-							<div className="f-dash mt-8 justify-center text-xl font-semibold">
+						<div className="flex mt-5">
+							<p className="mr-4 text-2xl font-bold">Member name:</p>
+							<div className="relative w-45" ref={dropdownRef}>
+								<input
+									type="text"
+									value={dropdownValue}
+									onChange={handleInputChange}
+									onClick={() => setShowDropdown(true)}
+									className="border-2 border-gray-800 rounded-md w-full text-xl p-1"
+									placeholder="Select a member..."
+								/>
+								{showDropdown && (
+									<div className="absolute left-0 right-0 bg-white border-2 border-gray-800 rounded-md z-10 max-h-60 overflow-y-auto">
+										{filteredMembers.length > 0 ? (
+											filteredMembers.map((member) => (
+												<div
+													key={member._id}
+													className="text-xl cursor-pointer p-2 hover:bg-gray-200"
+													onClick={() => handleSelectMember(member)}
+												>
+													{member.name}
+												</div>
+											))
+										) : (
+											<div className="p-2 text-gray-500">No matches found</div>
+										)}
+									</div>
+								)}
+							</div>
+						</div>
+					</div>
+					{selectedMember && (
+						<div className="f-dash mt-8 justify-center">
+							<Separator />
+							<h3 className="text-2xl pb-3 text-semibold">Summary:</h3>
+							<div className="b-font text-lg">
+								<p>Member name: {selectedMember.name}</p>
 								<p>No. of Body: {selectedMember.numberOfBody}</p>
 								<p>Amount: {amountDeposit * selectedMember.numberOfBody}</p>
 							</div>
-						)}
-					</main>
-				</div>
+						</div>
+					)}
+				</main>
+
 				<div className="flex justify-end">
 					<button
 						onClick={handleSave}
@@ -265,6 +273,36 @@ const Deposit = () => {
 						Save
 					</button>
 				</div>
+
+				{confirmationVisible && (
+					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+						<div className="bg-white p-10 rounded-md b-font">
+							<h2 className="text-2xl font-bold">
+								You are about to record the following information:
+							</h2>
+							<div className="text-lg font-semibold py-5">
+								<p>Member name: {selectedMember.name}</p>
+								<p>No. of Body: {selectedMember.numberOfBody}</p>
+								<p>Amount: {amountDeposit * selectedMember.numberOfBody}</p>
+							</div>
+							<div className="flex justify-between">
+								<button
+									onClick={handleCancel}
+									className="text-lg warning-button hover:warning-button-hover"
+								>
+									Cancel
+								</button>
+								<button
+									onClick={handleConfirmSave}
+									className="text-lg paid-button hover:paid-button-hover"
+								>
+									Proceed
+								</button>
+							</div>
+						</div>
+					</div>
+				)}
+
 				{isSuccessModalVisible && (
 					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
 						<div className="bg-white p-20 rounded-md">
@@ -275,7 +313,7 @@ const Deposit = () => {
 					</div>
 				)}
 				{isErrorModalVisible && (
-					<div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
 						<div className="bg-white p-20 rounded-md">
 							<h2 className="text-xl text-red-600 font-bold mb-4">
 								Error Occurred
@@ -285,7 +323,7 @@ const Deposit = () => {
 					</div>
 				)}
 				{isNoMemberModalVisible && (
-					<div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
 						<div className="bg-white p-20 rounded-md">
 							<h2 className="text-xl text-red-600 font-bold mb-4">
 								No Member Selected

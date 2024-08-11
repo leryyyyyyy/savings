@@ -1,11 +1,11 @@
 "use client";
+import React, { useContext } from "react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import Separator from "../components/Separator";
 import CurrentDate from "../components/CurrentDate";
 import Loader from "../components/Loader/Loader";
 import WeeklyView from "../components/WeeklyView";
-import React, { useContext } from "react";
 import AuthContext from "@/context/AuthContext";
 
 const Reports = () => {
@@ -31,6 +31,7 @@ const Reports = () => {
 					<CurrentDate />
 				</section>
 				<Separator />
+
 				<main>
 					<WeeklyView />
 				</main>

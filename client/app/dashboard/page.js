@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Navbar from "../components/Navbar";
-import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Total from "../components/Total";
 import CurrentDate from "../components/CurrentDate";
 import Sidebar from "../components/Sidebar";
@@ -29,25 +29,14 @@ const Dashboard = () => {
 	// TODO: END
 
 	//* For dashboard navigation
-	const router = useRouter();
 
-	const members = () => {
-		router.push("/members");
-	};
-
-	const deposit = () => {
-		router.push("/deposit");
-	};
-
-	const reports = () => {
-		router.push("/reports");
-	};
+	const pathname = usePathname();
 	return (
 		<>
 			<Navbar />
 			<Sidebar />
 			<div className="content h-screen">
-				<section className="flex justify-between items-center mb-7">
+				<section className="flex justify-between items-center mb-7 ">
 					<div className="space-y-3">
 						<Total />
 						<MemberCount />
@@ -55,25 +44,33 @@ const Dashboard = () => {
 					<CurrentDate />
 				</section>
 				<Separator />
-				<main className="flex justify-between items-center h-40 space-x-20 f-dash">
-					<div
-						onClick={members}
-						className="dash-nav text-2xl font-bold flex items-center justify-center flex-1 h-full  hover:dash-nav-hover hover:scale-105 hover:shadow-lg"
-					>
-						<p> members</p>
-					</div>
-					<div
-						onClick={deposit}
-						className="dash-nav text-2xl font-bold flex items-center justify-center flex-1 h-full hover:dash-nav-hover hover:scale-105 hover:shadow-lg"
-					>
-						<p>Deposit for this week</p>
-					</div>
-					<div
-						onClick={reports}
-						className="dash-nav text-2xl font-bold flex items-center justify-center flex-1 h-full  hover:dash-nav-hover hover:scale-105 hover:shadow-lg"
-					>
-						<p> reports</p>
-					</div>
+				<main>
+					<nav className="flex flex-1 flex-wrap justify-between items-center space-x-20 f-dash ">
+						<a
+							href="/members"
+							className="dash-nav py-20 text-2xl font-bold h-full flex-1 hover:dash-nav-hover hover:scale-105 hover:shadow-lg"
+						>
+							<p> members</p>
+						</a>
+						<a
+							href="/deposit"
+							className="dash-nav py-20 text-2xl font-bold h-full flex-1 hover:dash-nav-hover hover:scale-105 hover:shadow-lg"
+						>
+							<p>Deposit for this week</p>
+						</a>
+						<a
+							href="/loan"
+							className="dash-nav py-20 text-2xl font-bold h-full flex-1 hover:dash-nav-hover hover:scale-105 hover:shadow-lg"
+						>
+							<p> loan</p>
+						</a>
+						<a
+							href="reports"
+							className="dash-nav py-20 text-2xl font-bold h-full flex-1 hover:dash-nav-hover hover:scale-105 hover:shadow-lg"
+						>
+							<p> reports</p>
+						</a>
+					</nav>
 				</main>
 			</div>
 		</>
