@@ -6,6 +6,7 @@ import Separator from "../components/Separator";
 import CurrentDate from "../components/CurrentDate";
 import Loader from "../components/Loader/Loader";
 import WeeklyView from "../components/WeeklyView";
+import Breadcrumb from "../components/Breadcrumb";
 import AuthContext from "@/context/AuthContext";
 
 const Reports = () => {
@@ -31,7 +32,7 @@ const Reports = () => {
 					<CurrentDate />
 				</section>
 				<Separator />
-
+				<Breadcrumb />
 				<main>
 					<WeeklyView />
 				</main>

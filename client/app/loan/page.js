@@ -6,6 +6,7 @@ import Sidebar from "../components/Sidebar";
 import Separator from "../components/Separator";
 import Total from "../components/Total";
 import CurrentDate from "../components/CurrentDate";
+import Breadcrumb from "../components/Breadcrumb";
 import axios from "axios";
 import AuthContext from "@/context/AuthContext";
 
@@ -226,6 +227,8 @@ const Loan = () => {
 					<CurrentDate />
 				</section>
 				<Separator />
+
+				<Breadcrumb />
 				<h1 className="f-heading pb-8">Loan</h1>
 				<main className="h-auto p-8 border-2 border-sky-500 bg-sky-50 rounded-md b-font">
 					<div className="flex justify-between f-dash mb-10 mt-5 b-font ">
