@@ -8,6 +8,7 @@ import AuthContext from "@/context/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "../../components/Loader/Loader.js";
+import Breadcrumb from "@/app/components/Breadcrumb.js";
 
 const addNewMember = () => {
   const { user } = useContext(AuthContext);
@@ -58,6 +59,7 @@ const addNewMember = () => {
       <Navbar />
       <Sidebar />
       <div className="content h-screen bg-gray-50">
+        <Breadcrumb />
         <p className="f-heading mb-5">Add New Member</p>
         <hr></hr>
         <form onSubmit={onSubmit}>
