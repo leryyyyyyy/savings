@@ -16,10 +16,12 @@ const Loan = () => {
 	const [filteredMembers, setFilteredMembers] = useState([]);
 	const [dropdownValue, setDropdownValue] = useState("");
 	const [showDropdown, setShowDropdown] = useState(false);
-	const [guarantorDropdownValue, setGuarantorDropdownValue] = useState("");
+	const [total, setTotal] = useState(0);
+	const [totalDeposit, setTotalDeposit] = useState(0);
+	const [isGuarantorDisabled, setIsGuarantorDisabled] = useState(true);
 	const [filteredGuarantor, setFilteredGuarantor] = useState([]);
+	const [guarantorDropdownValue, setGuarantorDropdownValue] = useState("");
 	const [showGuarantorDropdown, setShowGuarantorDropdown] = useState(false);
-	const dropdownRef = useRef(null);
 	const guarantorDropdownRef = useRef(null);
 	const [selectedGuarantor, setSelectedGuarantor] = useState(null);
 	const [amount, setAmount] = useState("");
@@ -28,12 +30,14 @@ const Loan = () => {
 	const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
 	const [isErrorModalVisible, setIsErrorModalVisible] = useState(false);
 	const [isNoMemberModalVisible, setIsNoMemberModalVisible] = useState(false);
+	const dropdownRef = useRef(null);
 
 	useEffect(() => {
 		const fetchMembers = async () => {
 			try {
 				const response = await axios.get(
-					"http://localhost:5000/api/members/memberList"
+					// ! replace with updated api "http://localhost:5000/api/members/memberList"
+					"http://localhost:4000/members"
 				);
 				console.log(response.data);
 				setMembers(response.data);
@@ -44,13 +48,37 @@ const Loan = () => {
 		fetchMembers();
 	}, []);
 
+	useEffect(() => {
+		fetch("http://localhost:4000/totalAmount")
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error("Network response was not ok");
+				}
+				return response.json();
+			})
+			.then((data) => {
+				const amount = Number(data);
+				if (!isNaN(amount)) {
+					setTotal(amount);
+				} else {
+					console.error("Invalid total value:", data);
+				}
+			})
+			.catch((error) => {
+				console.error("Error fetching data:", error);
+			});
+	}, []);
+
 	const handleSelectMember = (member) => {
 		setSelectedMember(member);
 		setDropdownValue(member.name);
+		setTotalDeposit(member.totalDeposit);
 		setShowDropdown(false);
-		setFilteredGuarantor(members.filter((m) => m._id !== member._id));
-		// Clear guarantor if the same member was selected
-		if (selectedGuarantor?._id === member._id) {
+
+		// ! after testing uncomment setFilteredGuarantor(members.filter((m) => m._id !== member._id));
+		setFilteredGuarantor(members.filter((m) => m.id !== member.id));
+		// ! put _ before id = _id
+		if (selectedGuarantor?.id === member.id) {
 			setSelectedGuarantor(null);
 			setGuarantorDropdownValue("");
 		}
@@ -63,11 +91,10 @@ const Loan = () => {
 		setShowDropdown(true);
 	};
 
+	// ! put _ before id = _id
 	const handleGuarantorClick = () => {
 		if (guarantorDropdownValue === "") {
-			setFilteredGuarantor(
-				members.filter((m) => m._id !== selectedMember?._id)
-			);
+			setFilteredGuarantor(members.filter((m) => m.id !== selectedMember?.id));
 		}
 		setShowGuarantorDropdown(true);
 	};
@@ -102,7 +129,8 @@ const Loan = () => {
 
 		const filtered = members.filter(
 			(member) =>
-				member._id !== selectedMember?._id &&
+				// ! put _ before id = _id
+				member.id !== selectedMember?.id &&
 				member.name.toLowerCase().startsWith(value.toLowerCase())
 		);
 		setFilteredGuarantor(filtered);
@@ -114,14 +142,22 @@ const Loan = () => {
 		setShowGuarantorDropdown(false);
 	};
 
-	const formatAmount = (value) => {
-		return value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-	};
-
 	const handleAmountChange = (e) => {
-		const value = e.target.value.replace(/,/g, "");
+		let value = e.target.value.replace(/,/g, "");
+
 		if (!isNaN(value)) {
-			setAmount(formatAmount(value));
+			value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+			setAmount(value);
+		}
+
+		const numericValue = parseFloat(value.replace(/,/g, ""));
+		if (!isNaN(numericValue)) {
+			// Compare against total instead of amount
+			if (numericValue > totalDeposit) {
+				setIsGuarantorDisabled(false);
+			} else {
+				setIsGuarantorDisabled(true);
+			}
 		}
 	};
 
@@ -156,9 +192,11 @@ const Loan = () => {
 
 		//! Modify submission data
 		const submissionData = {
-			borrowerId: selectedMember._id,
+			// ! put _ before id = _id
+			borrowerId: selectedMember.id,
 			borrowerName: selectedMember.name,
-			guarantorId: selectedGuarantor?._id || null,
+			borrowerDeposit: selectedMember.totalDeposit,
+			guarantorId: selectedGuarantor?.id || null,
 			guarantorName: selectedGuarantor?.name || null,
 			amount: amount,
 			date: new Date().toISOString().split("T")[0], // Date in YYYY-MM-DD format
@@ -170,7 +208,8 @@ const Loan = () => {
 	const handleConfirmSave = async () => {
 		try {
 			const response = await axios.post(
-				"http://localhost:5000/api/deposit/addDeposit",
+				//! change to loan API "http://localhost:4000/loans",
+				"http://localhost:4000/loans",
 				submissionData
 			);
 
@@ -262,6 +301,21 @@ const Loan = () => {
 								)}
 							</div>
 						</div>
+
+						<div className="flex">
+							<p className="mr-4 text-2xl font-bold">Amount:</p>
+							<div className="relative w-45">
+								<input
+									required
+									type="text"
+									value={amount}
+									onChange={handleAmountChange}
+									className="border-2 border-gray-800 rounded-md w-full text-xl p-1"
+									placeholder="Enter amount..."
+								/>
+							</div>
+						</div>
+
 						<div className="flex">
 							<p className="mr-4 text-2xl font-bold">Guarantor:</p>
 							<div className="relative w-45" ref={guarantorDropdownRef}>
@@ -272,6 +326,7 @@ const Loan = () => {
 									onClick={handleGuarantorClick}
 									className="border-2 border-gray-800 rounded-md w-full text-xl p-1"
 									placeholder="Select a guarantor..."
+									disabled={isGuarantorDisabled}
 								/>
 								{showGuarantorDropdown && (
 									<div className="absolute left-0 right-0 bg-white border-2 border-gray-800 rounded-md z-10 max-h-60 overflow-y-auto">
@@ -292,19 +347,6 @@ const Loan = () => {
 								)}
 							</div>
 						</div>
-						<div className="flex">
-							<p className="mr-4 text-2xl font-bold">Amount:</p>
-							<div className="relative w-45">
-								<input
-									required
-									type="text"
-									value={amount}
-									onChange={handleAmountChange}
-									className="border-2 border-gray-800 rounded-md w-full text-xl p-1"
-									placeholder="Enter amount..."
-								/>
-							</div>
-						</div>
 					</div>
 					<Separator />
 					<div className="b-font mt-5">
@@ -314,7 +356,11 @@ const Loan = () => {
 								Borrower: {selectedMember ? selectedMember.name : ""}
 							</p>
 							<p className="font-semibold">
-								Guarantor: {selectedGuarantor ? selectedGuarantor.name : ""}
+								Total Deposit:{" "}
+								{selectedMember ? selectedMember.totalDeposit : ""}
+							</p>
+							<p className="font-semibold">
+								Guarantor: {selectedGuarantor ? selectedGuarantor.name : "none"}
 							</p>
 							<p className="font-semibold">
 								Amount: {amount ? `P${amount}` : " "}
