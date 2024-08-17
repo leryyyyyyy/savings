@@ -11,6 +11,9 @@ import axios from "axios";
 import AuthContext from "@/context/AuthContext";
 import Breadcrumb from "../components/Breadcrumb";
 
+import Modal from "../components/Modal";
+import ConfirmationModal from "../components/ConfirmationModal";
+
 const formatDate = (date) => {
 	const month = String(date.getUTCMonth() + 1).padStart(2, "0");
 	const day = String(date.getUTCDate()).padStart(2, "0");
@@ -277,62 +280,28 @@ const Deposit = () => {
 				</div>
 
 				{confirmationVisible && (
-					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-						<div className="bg-white p-10 rounded-md b-font">
-							<h2 className="text-2xl font-bold">
-								You are about to record the following information:
-							</h2>
-							<div className="text-lg font-semibold py-5">
-								<p>Member name: {selectedMember.name}</p>
-								<p>No. of Body: {selectedMember.numberOfBody}</p>
-								<p>Amount: {amountDeposit * selectedMember.numberOfBody}</p>
-							</div>
-							<div className="flex justify-between">
-								<button
-									onClick={handleCancel}
-									className="text-lg warning-button hover:warning-button-hover"
-								>
-									Cancel
-								</button>
-								<button
-									onClick={handleConfirmSave}
-									className="text-lg paid-button hover:paid-button-hover"
-								>
-									Proceed
-								</button>
-							</div>
-						</div>
-					</div>
+					<ConfirmationModal
+						message="You are about to record the following information:"
+						memberName={selectedMember.name}
+						numberOfBody={selectedMember.numberOfBody}
+						amount={amountDeposit * selectedMember.numberOfBody}
+						onCancel={handleCancel}
+						onConfirm={handleConfirmSave}
+					/>
 				)}
 
-				{isSuccessModalVisible && (
-					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-						<div className="bg-white p-20 rounded-md">
-							<h2 className="text-xl text-green-600 font-bold mb-4">
-								Record Successful!
-							</h2>
-						</div>
-					</div>
-				)}
+				{isSuccessModalVisible && <Modal message="Record successful!" />}
 				{isErrorModalVisible && (
-					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-						<div className="bg-white p-20 rounded-md">
-							<h2 className="text-xl text-red-600 font-bold mb-4">
-								Error Occurred
-							</h2>
-							<p className="mb-4">Data not saved. Please try again.</p>
-						</div>
-					</div>
+					<Modal
+						message="An error occured."
+						content="Data not saved. Please try again."
+					/>
 				)}
 				{isNoMemberModalVisible && (
-					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-						<div className="bg-white p-20 rounded-md">
-							<h2 className="text-xl text-red-600 font-bold mb-4">
-								No Member Selected
-							</h2>
-							<p className="mb-4">Please select a member before saving.</p>
-						</div>
-					</div>
+					<Modal
+						message="No Member Selected"
+						content="Please select a member before saving."
+					/>
 				)}
 			</div>
 		</>

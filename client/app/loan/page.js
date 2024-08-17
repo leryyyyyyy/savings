@@ -10,6 +10,9 @@ import Breadcrumb from "../components/Breadcrumb";
 import axios from "axios";
 import AuthContext from "@/context/AuthContext";
 
+import Modal from "../components/Modal";
+import ConfirmationModal from "../components/ConfirmationModal";
+
 const Loan = () => {
 	const [members, setMembers] = useState([]);
 	const [selectedMember, setSelectedMember] = useState(null);
@@ -122,9 +125,9 @@ const Loan = () => {
 		setGuarantorDropdownValue(value);
 		setShowGuarantorDropdown(true);
 
-		// Reset selected guarantor if input is cleared
 		if (value === "") {
-			setSelectedGuarantor(null);
+			setSelectedGuarantor("");
+			setFilteredGuarantor(true);
 		}
 
 		const filtered = members.filter(
@@ -145,19 +148,20 @@ const Loan = () => {
 	const handleAmountChange = (e) => {
 		let value = e.target.value.replace(/,/g, "");
 
-		if (!isNaN(value)) {
+		if (!isNaN(value) && value.trim() !== "") {
 			value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 			setAmount(value);
-		}
 
-		const numericValue = parseFloat(value.replace(/,/g, ""));
-		if (!isNaN(numericValue)) {
-			// Compare against total instead of amount
+			const numericValue = parseFloat(value.replace(/,/g, ""));
 			if (numericValue > totalDeposit) {
 				setIsGuarantorDisabled(false);
 			} else {
 				setIsGuarantorDisabled(true);
+				setSelectedGuarantor("");
 			}
+		} else {
+			setAmount("");
+			setIsGuarantorDisabled(true);
 		}
 	};
 
@@ -380,64 +384,28 @@ const Loan = () => {
 				</div>
 
 				{confirmationVisible && (
-					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-						<div className="bg-white p-10 rounded-md b-font">
-							<h2 className="text-2xl font-bold">
-								You are about to record the following information:
-							</h2>
-							<div className="text-lg font-semibold py-5">
-								<p> Borrower: {selectedMember ? selectedMember.name : ""}</p>
-								<p>
-									Guarantor: {selectedGuarantor ? selectedGuarantor.name : ""}
-								</p>
-								<p>Amount: {amount ? `P${amount}` : " "}</p>
-							</div>
-							<div className="flex justify-between">
-								<button
-									onClick={handleCancel}
-									className="text-lg warning-button hover:warning-button-hover"
-								>
-									Cancel
-								</button>
-								<button
-									onClick={handleConfirmSave}
-									className="text-lg paid-button hover:paid-button-hover"
-								>
-									Proceed
-								</button>
-							</div>
-						</div>
-					</div>
+					<ConfirmationModal
+						message="You are about to record the following information:"
+						memberName={selectedMember ? selectedMember.name : ""}
+						guarantor={selectedGuarantor ? selectedGuarantor.name : ""}
+						amount={amount ? `P${amount}` : " "}
+						onCancel={handleCancel}
+						onConfirm={handleConfirmSave}
+					/>
 				)}
 
-				{isSuccessModalVisible && (
-					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-						<div className="bg-white p-20 rounded-md">
-							<h2 className="text-xl text-green-600 font-bold mb-4">
-								Record Successful!
-							</h2>
-						</div>
-					</div>
-				)}
+				{isSuccessModalVisible && <Modal message="Record successful!" />}
 				{isErrorModalVisible && (
-					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-						<div className="bg-white p-20 rounded-md">
-							<h2 className="text-xl text-red-600 font-bold mb-4">
-								Error Occurred
-							</h2>
-							<p className="mb-4">Data not saved. Please try again.</p>
-						</div>
-					</div>
+					<Modal
+						message="An error occured."
+						content="Data not saved. Please try again."
+					/>
 				)}
 				{isNoMemberModalVisible && (
-					<div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-						<div className="bg-white p-20 rounded-md">
-							<h2 className="text-xl text-red-600 font-bold mb-4">
-								No Member Selected
-							</h2>
-							<p className="mb-4">Please select a member before saving.</p>
-						</div>
-					</div>
+					<Modal
+						message="No Member Selected"
+						content="Please select a member before saving."
+					/>
 				)}
 			</div>
 		</>
