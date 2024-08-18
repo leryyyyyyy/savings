@@ -6,6 +6,7 @@ import AuthContext from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Loader from "../components/Loader/Loader.js";
+import Breadcrumb from "../components/Breadcrumb";
 
 const membersList = () => {
   const { user } = useContext(AuthContext);
@@ -78,6 +79,7 @@ const membersList = () => {
       <Navbar />
       <Sidebar />
       <div className="content h-screen bg-gray-50">
+        <Breadcrumb />
         <p className="f-heading text-gray-900 ">Members</p>
         <div className="flex justify-end mb-8">
           <button

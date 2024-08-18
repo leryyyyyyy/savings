@@ -1,4 +1,5 @@
 import { Inter } from "next/font/google";
+import Breadcrumb from "./components/Breadcrumb";
 import "./globals.css";
 
 import { AuthProvider } from "../context/AuthContext";

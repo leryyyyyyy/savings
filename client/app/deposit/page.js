@@ -9,6 +9,7 @@ import Loader from "../components/Loader/Loader";
 import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
 import AuthContext from "@/context/AuthContext";
+import Breadcrumb from "../components/Breadcrumb";
 
 const formatDate = (date) => {
 	const month = String(date.getUTCMonth() + 1).padStart(2, "0");
@@ -187,6 +188,7 @@ const Deposit = () => {
 					<CurrentDate />
 				</section>
 				<Separator />
+				<Breadcrumb />
 
 				<h1 className="f-heading pb-8">Deposit</h1>
 				<main className="h-auto p-12 border-2 border-sky-500 bg-sky-50 rounded-md">

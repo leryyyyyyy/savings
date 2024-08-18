@@ -9,6 +9,7 @@ import { useParams } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "../../../components/Loader/Loader.js";
+import Breadcrumb from "@/app/components/Breadcrumb";
 
 const editMember = () => {
   const { user } = useContext(AuthContext);
@@ -76,6 +77,7 @@ const editMember = () => {
       <Navbar />
       <Sidebar />
       <div className="content h-screen bg-gray-50">
+        <Breadcrumb />
         <p className="f-heading mb-5">Edit Member</p>
         <hr></hr>
         <form onSubmit={handleSubmit}>
