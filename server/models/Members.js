@@ -5,6 +5,8 @@ const MemberSchema = new mongoose.Schema({
   contactNumber: { type: String, required: true },
   address: { type: String, required: true },
   numberOfBody: { type: Number, required: true },
+  isDeleted: { type: Boolean, default: false },
+  deletedAt: { type: Date, default: null },
   // Removed userId reference
 });
 
