@@ -86,6 +86,8 @@ exports.addMember = async (req, res) => {
       address,
       numberOfBody,
       userId,
+      isDeleted: false,
+      deletedAt: null,
     });
 
     // Save the member to the database
@@ -102,7 +104,7 @@ exports.addMember = async (req, res) => {
 
 exports.getAllMembers = async (req, res) => {
   try {
-    const members = await Member.find();
+    const members = await Member.find({ isDeleted: false });
     res.status(200).json(members);
   } catch (err) {
     console.error("Error fetching members:", err.message);
