@@ -297,12 +297,6 @@ const Deposit = () => {
 						content="Data not saved. Please try again."
 					/>
 				)}
-				{isNoMemberModalVisible && (
-					<Modal
-						message="No Member Selected"
-						content="Please select a member before saving."
-					/>
-				)}
 			</div>
 		</>
 	);
