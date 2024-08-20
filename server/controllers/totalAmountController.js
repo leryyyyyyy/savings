@@ -39,7 +39,17 @@ exports.getTotalMemberDeposit = async (req, res) => {
       return total + weeklyTotal;
     }, 0);
 
-    res.status(200).json({ memberId, year: currentYear, totalDepositAmount });
+    const memberName =
+      memberDeposits[0]?.deposits.find(
+        (deposit) => deposit.memberId.toString() === memberId
+      )?.memberName || "Unknown Member";
+
+    res.status(200).json({
+      memberId,
+      memberName,
+      year: currentYear,
+      totalDepositAmount,
+    });
   } catch (err) {
     console.error(
       "Error fetching total deposit amount for member:",
