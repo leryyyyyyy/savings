@@ -1,35 +1,30 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const Total = () => {
 	const [total, setTotal] = useState(0);
-
 	useEffect(() => {
-		fetch("http://localhost:4000/totalAmount")
-			.then((response) => {
-				if (!response.ok) {
-					throw new Error("Network response was not ok");
-				}
-				return response.json();
-			})
-			.then((data) => {
-				const amount = Number(data);
-				if (!isNaN(amount)) {
-					setTotal(amount);
-				} else {
-					console.error("Invalid total value:", data);
-				}
-			})
-			.catch((error) => {
-				console.error("Error fetching data:", error);
-			});
+		const fetchTotalDepositAmount = async () => {
+			try {
+				const response = await axios.get(
+					`http://localhost:5000/api/amount/totalDepositAmount`
+				);
+				setTotal(response.data.overallTotalDepositAmount);
+				console.log(total);
+			} catch (err) {
+				console.error("Error fetching data:", err);
+			}
+		};
+
+		fetchTotalDepositAmount();
 	}, []);
 
 	return (
 		<div className="flex f-subheading">
 			<h3 className="text-4xl">
-				Total amount:{" "}
-				<span className="text-green-500 font-semibold">
-					{total ? total.toLocaleString() : 0}
+				Total amount:
+				<span className="text-green-500 font-semibold mx-3">
+					P{total !== null ? total.toLocaleString() : 0}
 				</span>
 			</h3>
 		</div>

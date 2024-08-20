@@ -10,16 +10,20 @@ import Breadcrumb from "../components/Breadcrumb";
 import axios from "axios";
 import AuthContext from "@/context/AuthContext";
 
-import Modal from "../components/Modal";
-import ConfirmationModal from "../components/ConfirmationModal";
+// import Modal from "../components/Modal";
+// import ConfirmationModal from "../components/ConfirmationModal";
+import TestModal from "../components/TestModal";
+import { useParams } from "next/navigation";
 
 const Loan = () => {
+	const { id } = useParams();
+
 	const [members, setMembers] = useState([]);
 	const [selectedMember, setSelectedMember] = useState(null);
 	const [filteredMembers, setFilteredMembers] = useState([]);
 	const [dropdownValue, setDropdownValue] = useState("");
 	const [showDropdown, setShowDropdown] = useState(false);
-	const [total, setTotal] = useState(0);
+	const [totalAmount, setTotalAmount] = useState(0);
 	const [totalDeposit, setTotalDeposit] = useState(0);
 	const [isGuarantorDisabled, setIsGuarantorDisabled] = useState(true);
 	const [filteredGuarantor, setFilteredGuarantor] = useState([]);
@@ -27,60 +31,57 @@ const Loan = () => {
 	const [showGuarantorDropdown, setShowGuarantorDropdown] = useState(false);
 	const guarantorDropdownRef = useRef(null);
 	const [selectedGuarantor, setSelectedGuarantor] = useState(null);
+
 	const [amount, setAmount] = useState("");
+	const [isAmountDisabled, setIsAmountDisabled] = useState(true);
+	const [errorMessage, setErrorMessage] = useState(false);
+
 	const [submissionData, setSubmissionData] = useState({});
 	const [confirmationVisible, setConfirmationVisible] = useState(false);
-	const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
-	const [isErrorModalVisible, setIsErrorModalVisible] = useState(false);
-	const [isNoMemberModalVisible, setIsNoMemberModalVisible] = useState(false);
+	const [successModalVisible, setIsSuccessModalVisible] = useState(false);
+	const [errorModalVisible, setIsErrorModalVisible] = useState(false);
+	const [noMemberModalVisible, setIsNoMemberModalVisible] = useState(false);
+	const [amountErrorVisible, setIsAmountErrorVisible] = useState(false);
+	const [noGurantorVisible, setIsNoGuarantorVisible] = useState(false);
 	const dropdownRef = useRef(null);
 
 	useEffect(() => {
 		const fetchMembers = async () => {
 			try {
-				const response = await axios.get(
-					// ! replace with updated api "http://localhost:5000/api/members/memberList"
-					"http://localhost:4000/members"
-				);
-				console.log(response.data);
+				const response = await axios.get(`http://localhost:4000/members`); //! replace with new api
 				setMembers(response.data);
-			} catch (err) {
-				console.error("Error fetching members:", err);
+			} catch (error) {
+				console.error("Error fetching data:", error);
 			}
 		};
+
 		fetchMembers();
 	}, []);
 
 	useEffect(() => {
-		fetch("http://localhost:4000/totalAmount")
-			.then((response) => {
-				if (!response.ok) {
-					throw new Error("Network response was not ok");
-				}
-				return response.json();
-			})
-			.then((data) => {
-				const amount = Number(data);
-				if (!isNaN(amount)) {
-					setTotal(amount);
-				} else {
-					console.error("Invalid total value:", data);
-				}
-			})
-			.catch((error) => {
-				console.error("Error fetching data:", error);
-			});
-	}, []);
+		const fetchTotalDepositAmount = async () => {
+			try {
+				const response = await axios.get(
+					`http://localhost:5000/api/amount/totalDepositAmount`
+				);
+				setTotalAmount(response.data.overallTotalDepositAmount);
+				console.log(totalAmount);
+			} catch (err) {
+				console.error("Error fetching data:", err);
+			}
+		};
 
+		fetchTotalDepositAmount();
+	}, []);
 	const handleSelectMember = (member) => {
 		setSelectedMember(member);
 		setDropdownValue(member.name);
 		setTotalDeposit(member.totalDeposit);
 		setShowDropdown(false);
+		setIsAmountDisabled(false); //? */ Enable amount input when a member is selected
 
 		// ! after testing uncomment setFilteredGuarantor(members.filter((m) => m._id !== member._id));
 		setFilteredGuarantor(members.filter((m) => m.id !== member.id));
-		// ! put _ before id = _id
 		if (selectedGuarantor?.id === member.id) {
 			setSelectedGuarantor(null);
 			setGuarantorDropdownValue("");
@@ -94,6 +95,61 @@ const Loan = () => {
 		setShowDropdown(true);
 	};
 
+	const handleInputBorrower = (e) => {
+		const value = e.target.value;
+		setDropdownValue(value);
+		setShowDropdown(true);
+
+		if (value.trim() === "") {
+			setSelectedMember(null);
+			setAmount(""); // Clear amount value
+			setIsAmountDisabled(true); // Disable amount input when no member is selected
+			setSelectedGuarantor(null);
+			setIsGuarantorDisabled(true);
+			setGuarantorDropdownValue("");
+		}
+
+		const filtered = members.filter((member) =>
+			member.name.toLowerCase().startsWith(value.toLowerCase())
+		);
+		setFilteredMembers(filtered);
+	};
+
+	const handleAmountChange = (e) => {
+		let value = e.target.value.replace(/,/g, "").trim();
+
+		if (value === "" || isNaN(value)) {
+			setAmount("");
+			setErrorMessage(false);
+			resetGuarantor();
+			return;
+		}
+
+		value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		setAmount(value);
+
+		const numericValue = parseFloat(value.replace(/,/g, ""));
+
+		if (numericValue > totalAmount) {
+			setErrorMessage(true);
+			resetGuarantor();
+		} else {
+			setErrorMessage(false);
+
+			if (numericValue > totalDeposit) {
+				setIsGuarantorDisabled(false);
+			} else {
+				resetGuarantor();
+			}
+		}
+	};
+
+	const resetGuarantor = () => {
+		setIsGuarantorDisabled(true);
+		setSelectedGuarantor(null);
+		setGuarantorDropdownValue("");
+	};
+
 	// ! put _ before id = _id
 	const handleGuarantorClick = () => {
 		if (guarantorDropdownValue === "") {
@@ -102,22 +158,10 @@ const Loan = () => {
 		setShowGuarantorDropdown(true);
 	};
 
-	const handleInputBorrower = (e) => {
-		const value = e.target.value;
-		setDropdownValue(value);
-		setShowDropdown(true);
-
-		// Reset selected member if input is cleared
-		if (value === "") {
-			setSelectedMember(null);
-			setSelectedGuarantor(null);
-			setGuarantorDropdownValue("");
-		}
-
-		const filtered = members.filter((member) =>
-			member.name.toLowerCase().startsWith(value.toLowerCase())
-		);
-		setFilteredMembers(filtered);
+	const handleSelectGuarantor = (member) => {
+		setSelectedGuarantor(member);
+		setGuarantorDropdownValue(member.name);
+		setShowGuarantorDropdown(false);
 	};
 
 	const handleGuarantorInput = (e) => {
@@ -137,32 +181,6 @@ const Loan = () => {
 				member.name.toLowerCase().startsWith(value.toLowerCase())
 		);
 		setFilteredGuarantor(filtered);
-	};
-
-	const handleSelectGuarantor = (member) => {
-		setSelectedGuarantor(member);
-		setGuarantorDropdownValue(member.name);
-		setShowGuarantorDropdown(false);
-	};
-
-	const handleAmountChange = (e) => {
-		let value = e.target.value.replace(/,/g, "");
-
-		if (!isNaN(value) && value.trim() !== "") {
-			value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-			setAmount(value);
-
-			const numericValue = parseFloat(value.replace(/,/g, ""));
-			if (numericValue > totalDeposit) {
-				setIsGuarantorDisabled(false);
-			} else {
-				setIsGuarantorDisabled(true);
-				setSelectedGuarantor("");
-			}
-		} else {
-			setAmount("");
-			setIsGuarantorDisabled(true);
-		}
 	};
 
 	useEffect(() => {
@@ -186,6 +204,9 @@ const Loan = () => {
 	}, []);
 
 	const handleSave = async () => {
+		const numericAmount = parseFloat(amount.replace(/,/g, ""));
+
+		// Check if a member is selected
 		if (!selectedMember) {
 			setIsNoMemberModalVisible(true);
 			setTimeout(() => {
@@ -194,15 +215,49 @@ const Loan = () => {
 			return;
 		}
 
-		//! Modify submission data
+		// // Validate the amount
+		// if (isNaN(numericAmount) || numericAmount <= 0) {
+		// 	// Ensure amount is a valid positive number
+		// 	setIsAmountErrorVisible(true);
+		// 	setTimeout(() => {
+		// 		setIsAmountErrorVisible(false);
+		// 	}, 2000);
+		// 	return;
+		// }
+
+		// if (numericAmount > totalAmount) {
+		// 	setIsAmountErrorVisible(true);
+		// 	setTimeout(() => {
+		// 		setIsAmountErrorVisible(false);
+		// 	}, 2000);
+		// 	return;
+		// }
+
+		// // Validate if amount exceeds totalDeposit
+		// if (numericAmount > totalDeposit) {
+		// 	setIsAmountErrorVisible(true);
+		// 	setTimeout(() => {
+		// 		setIsAmountErrorVisible(false);
+		// 	}, 2000);
+		// 	return;
+		// }
+
+		if (amount > totalAmount && !selectedGuarantor) {
+			setIsNoGuarantorVisible(true);
+			setTimeout(() => {
+				setIsNoGuarantorVisible(false);
+			}, 2000);
+			return;
+		}
+
+		// If all validations pass, proceed with saving the data
 		const submissionData = {
-			// ! put _ before id = _id
 			borrowerId: selectedMember.id,
 			borrowerName: selectedMember.name,
 			borrowerDeposit: selectedMember.totalDeposit,
 			guarantorId: selectedGuarantor?.id || null,
 			guarantorName: selectedGuarantor?.name || null,
-			amount: amount,
+			amount: numericAmount,
 			date: new Date().toISOString().split("T")[0], // Date in YYYY-MM-DD format
 		};
 		setSubmissionData(submissionData);
@@ -212,8 +267,8 @@ const Loan = () => {
 	const handleConfirmSave = async () => {
 		try {
 			const response = await axios.post(
-				//! change to loan API "http://localhost:4000/loans",
-				"http://localhost:4000/loans",
+				//! change to loan API,
+				// "http://localhost:4000/loans",
 				submissionData
 			);
 
@@ -237,10 +292,15 @@ const Loan = () => {
 
 	const handleCancel = () => {
 		setConfirmationVisible(false);
+		resetForm();
 	};
 	const resetForm = () => {
 		setSelectedMember(null);
 		setDropdownValue("");
+		setAmount("");
+		setIsAmountDisabled(true);
+		setGuarantorDropdownValue("");
+		setIsGuarantorDisabled(true);
 		setFilteredMembers(members);
 	};
 
@@ -285,6 +345,7 @@ const Loan = () => {
 									onClick={handleDropdownClick}
 									className="border-2 border-gray-800 rounded-md w-full text-xl p-1"
 									placeholder="Select a member..."
+									required
 								/>
 								{showDropdown && (
 									<div className="absolute left-0 right-0 bg-white border-2 border-gray-800 rounded-md z-10 max-h-60 overflow-y-auto">
@@ -316,7 +377,14 @@ const Loan = () => {
 									onChange={handleAmountChange}
 									className="border-2 border-gray-800 rounded-md w-full text-xl p-1"
 									placeholder="Enter amount..."
+									disabled={isAmountDisabled}
 								/>
+								{errorMessage && (
+									<p className="font-normal text-base absolute top-12 left-0 text-red-600 w-96">
+										Loan amount cannot be greater than{" P "}
+										{totalAmount.toLocaleString()}
+									</p>
+								)}
 							</div>
 						</div>
 
@@ -369,7 +437,6 @@ const Loan = () => {
 							<p className="font-semibold">
 								Amount: {amount ? `P${amount}` : " "}
 							</p>
-							{/* //TODO: put a warning message under if amount exceeds total amount. */}
 						</div>
 					</div>
 				</main>
@@ -384,7 +451,7 @@ const Loan = () => {
 				</div>
 
 				{confirmationVisible && (
-					<ConfirmationModal
+					<TestModal
 						message="You are about to record the following information:"
 						memberName={selectedMember ? selectedMember.name : ""}
 						guarantor={selectedGuarantor ? selectedGuarantor.name : ""}
@@ -394,17 +461,29 @@ const Loan = () => {
 					/>
 				)}
 
-				{isSuccessModalVisible && <Modal message="Record successful!" />}
-				{isErrorModalVisible && (
-					<Modal
+				{successModalVisible && <TestModal message="Record successful!" />}
+				{errorModalVisible && (
+					<TestModal
 						message="An error occured."
 						content="Data not saved. Please try again."
 					/>
 				)}
-				{isNoMemberModalVisible && (
-					<Modal
-						message="No Member Selected"
+				{noMemberModalVisible && (
+					<TestModal
+						message="No member selected."
 						content="Please select a member before saving."
+					/>
+				)}
+				{amountErrorVisible && (
+					<TestModal
+						message="Invalid input!"
+						content="Please enter a valid loan amount before saving."
+					/>
+				)}
+				{noGurantorVisible && (
+					<TestModal
+						message="No guarantor selected."
+						content="Please enter a valid loan amount before saving."
 					/>
 				)}
 			</div>
