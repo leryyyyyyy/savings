@@ -1,6 +1,6 @@
 const Member = require("../models/Members");
 const WeeklyDeposit = require("../models/weeklyDeposit");
-
+const TotalDeposits = require("../models/totalMemberDeposit");
 const moment = require("moment-timezone");
 
 const getWeekOfYear = (date) => {
@@ -62,6 +62,15 @@ exports.createDeposit = async (req, res) => {
       depositAmount,
       date: currentDate.toDate(), // Store as Date type
     });
+    await TotalDeposits.updateOne(
+      { memberId },
+      {
+        $inc: { totalAmount: depositAmount },
+        $set: { memberName: member.name }, // Update or set the memberName
+        $set: { year: year },
+      },
+      { upsert: true }
+    );
 
     // Save the weekly deposit document
     await weeklyDeposit.save();
@@ -109,3 +118,56 @@ exports.getMembersWithoutDeposit = async (req, res) => {
     res.status(500).json({ msg: "Server error", error: err.message });
   }
 };
+
+// used to update the totaldeposit model in mongodb
+// const calculateTotals = async () => {
+//   const totals = await WeeklyDeposit.aggregate([
+//     {
+//       $unwind: "$deposits", // Unwind the deposits array
+//     },
+//     {
+//       $group: {
+//         _id: {
+//           memberId: "$deposits.memberId",
+//           year: "$year", // Group by year as well
+//         },
+//         totalAmount: { $sum: "$deposits.depositAmount" },
+//         memberName: { $first: "$deposits.memberName" }, // Use $first to get the memberName
+//       },
+//     },
+//     {
+//       $project: {
+//         memberId: "$_id.memberId",
+//         year: "$_id.year",
+//         memberName: 1,
+//         totalAmount: 1,
+//       },
+//     },
+//   ]);
+
+//   return totals;
+// };
+
+// const updateTotalDeposits = async () => {
+//   const totals = await calculateTotals();
+
+//   const bulkOps = totals.map((total) => ({
+//     updateOne: {
+//       filter: { memberId: total.memberId, year: total.year },
+//       update: {
+//         $set: {
+//           memberName: total.memberName,
+//           totalAmount: total.totalAmount,
+//           year: total.year,
+//         },
+//       },
+//       upsert: true,
+//     },
+//   }));
+
+//   await TotalDeposits.bulkWrite(bulkOps);
+
+//   console.log("Total deposits have been updated..");
+// };
+
+// updateTotalDeposits().catch(console.error);
