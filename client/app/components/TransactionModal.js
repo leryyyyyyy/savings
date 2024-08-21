@@ -24,7 +24,7 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 
 	const [amount, setAmount] = useState("");
 	const [isAmountDisabled, setIsAmountDisabled] = useState(true);
-	const [saveDisabled, setSaveDisabled] = useState(true);
+	const [saveDisabled, setSaveDisabled] = useState(false);
 
 	const [submissionData, setSubmissionData] = useState({});
 	const dropdownRef = useRef(null);
@@ -185,6 +185,7 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		setShowGuarantorDropdown(true);
 
 		if (value === "") {
+			setSaveDisabled(true);
 			setSelectedGuarantor(null);
 			setFilteredGuarantor(
 				members.filter((m) => m._id !== selectedMember?._id)
@@ -248,7 +249,7 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		try {
 			const response = await axios.post(
 				//! change to loan API,
-				// "http://localhost:4000/loans",
+				"http://localhost:4000/loans",
 				submissionData
 			);
 
@@ -284,7 +285,7 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		setIsAmountDisabled(true);
 		setIsGuarantorDisabled(true);
 		setNoGurantorSelected(false);
-		setSaveDisabled(true);
+		// setSaveDisabled(true);
 	};
 
 	const handleCloseErrorModal = () => {
@@ -452,9 +453,9 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 			{confirmationModalVisible && (
 				<ConfirmationModal
 					message={"You are about to record the following information."}
-					memberName={submissionData.selectedMember}
-					amount={submissionData.amount.toLocaleString()}
-					guarantor={submissionData.selectedGuarantor}
+					memberName={submissionData.borrowerName}
+					amount={submissionData.amount}
+					guarantor={submissionData.guarantorName}
 					onCancel={handleCancel}
 					onConfirm={handleConfirmSave}
 				/>

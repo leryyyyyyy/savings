@@ -15,7 +15,7 @@ const ConfirmationModal = ({
 					<p>Member name: {memberName} </p>
 					{guarantor && <p>Gurantor name: {guarantor ? guarantor : "none"}</p>}
 					{numberOfBody && <p>No. of Body: {numberOfBody}</p>}
-					<p>Amount:P {amount}</p>
+					<p>Amount:P {amount.toLocaleString()}</p>
 				</div>
 				<div className="flex justify-between">
 					<button

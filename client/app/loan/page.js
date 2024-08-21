@@ -29,7 +29,10 @@ const membersLoan = () => {
 	useEffect(() => {
 		const fetchMembers = async () => {
 			try {
-				const response = await axios.get("http://localhost:4000/loans");
+				const response = await axios.get(
+					// "http://localhost:5000/api/members/memberList"
+					"http://localhost:4000/loans"
+				);
 				setMembers(response.data);
 				setFilteredMembers(response.data);
 			} catch (err) {
@@ -153,7 +156,7 @@ const membersLoan = () => {
 											{members.amount}
 										</td>
 										<td className="border-b-[1px] px-4 py-3 f-body">
-											{members.guarantorName ? members.guarantorName : "none"}
+											{members.guarantorName ? members.guarantorName : "none"}{" "}
 										</td>
 
 										<td className="border-b-[1px] px-4 py-3 f-body">
