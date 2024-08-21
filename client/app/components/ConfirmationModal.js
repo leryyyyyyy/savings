@@ -13,7 +13,7 @@ const ConfirmationModal = ({
 				<h2 className="text-2xl font-bold">{message}</h2>
 				<div className="text-lg font-semibold py-5">
 					<p>Member name: {memberName} </p>
-					{guarantor && <p>Gurantor name: {guarantor}</p>}
+					{guarantor && <p>Gurantor name: {guarantor ? guarantor : "none"}</p>}
 					{numberOfBody && <p>No. of Body: {numberOfBody}</p>}
 					<p>Amount:P {amount}</p>
 				</div>

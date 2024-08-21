@@ -1,7 +1,11 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import Props from "prop-types";
 import Separator from "./Separator";
 import axios from "axios";
+import ConfirmationModal from "./ConfirmationModal";
+import ErrorMessage from "./ErrorMessage";
+import Modal from "./Modal";
 
 const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 	const [members, setMembers] = useState([]);
@@ -20,23 +24,33 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 
 	const [amount, setAmount] = useState("");
 	const [isAmountDisabled, setIsAmountDisabled] = useState(true);
-	const [errorMessage, setErrorMessage] = useState(false);
+	const [saveDisabled, setSaveDisabled] = useState(true);
 
 	const [submissionData, setSubmissionData] = useState({});
 	const dropdownRef = useRef(null);
 
 	const [total, setTotal] = useState(0);
 
-	const [modalType, setModalType] = useState(null);
+	// ?modals
+	// const [modalType, setModalType] = useState(null);
+	const [confirmationModalVisible, setIsConfirmationModalVisible] =
+		useState(false);
+	const [failedSave, setSaveFailed] = useState(false);
+	const [successModalVisible, setSuccessModalVisible] = useState(false);
+
+	// ? error messages
+	const [noMemberSelected, setIsNoMemberSelected] = useState(false);
+	const [invalidAmount, setInvalidAmount] = useState(false);
+	const [noGuarantor, setNoGurantorSelected] = useState(false);
 
 	useEffect(() => {
 		const fetchTotalDepositAmount = async () => {
 			try {
 				const response = await axios.get(
-					`http://localhost:5000/api/amount/totalDepositAmount`
+					"http://localhost:5000/api/amount/totalDepositAmount"
 				);
-				setTotal(response.data.overallTotalDepositAmount);
-				console.log(total);
+				setTotalAmount(response.data.overallTotalDepositAmount);
+				console.log(totalAmount);
 			} catch (err) {
 				console.error("Error fetching data:", err);
 			}
@@ -58,21 +72,6 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		fetchMembers();
 	}, []);
 
-	useEffect(() => {
-		const fetchTotalDepositAmount = async () => {
-			try {
-				const response = await axios.get(
-					`http://localhost:5000/api/amount/totalDepositAmount`
-				);
-				setTotalAmount(response.data.overallTotalDepositAmount);
-				console.log(totalAmount);
-			} catch (err) {
-				console.error("Error fetching data:", err);
-			}
-		};
-
-		fetchTotalDepositAmount();
-	}, []);
 	const handleSelectMember = (member) => {
 		setSelectedMember(member);
 		setDropdownValue(member.name);
@@ -81,8 +80,8 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		setIsAmountDisabled(false); //? */ Enable amount input when a member is selected
 
 		// ! after testing uncomment setFilteredGuarantor(members.filter((m) => m._id !== member._id));
-		setFilteredGuarantor(members.filter((m) => m.id !== member.id));
-		if (selectedGuarantor?.id === member.id) {
+		setFilteredGuarantor(members.filter((m) => m._id !== member._id));
+		if (selectedGuarantor?._id === member._id) {
 			setSelectedGuarantor(null);
 			setGuarantorDropdownValue("");
 		}
@@ -101,12 +100,13 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		setShowDropdown(true);
 
 		if (value.trim() === "") {
-			setSelectedMember(null);
-			setAmount(""); // Clear amount value
-			setIsAmountDisabled(true); // Disable amount input when no member is selected
-			setSelectedGuarantor(null);
-			setIsGuarantorDisabled(true);
-			setGuarantorDropdownValue("");
+			resetForm();
+			// setSelectedMember(null);
+			// setAmount(""); // Clear amount value
+			// setIsAmountDisabled(true); // Disable amount input when no member is selected
+			// setSelectedGuarantor(null);
+			// setIsGuarantorDisabled(true);
+			// setGuarantorDropdownValue("");
 		}
 
 		const filtered = members.filter((member) =>
@@ -115,12 +115,39 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		setFilteredMembers(filtered);
 	};
 
+	const validateAmount = (value) => {
+		const numericValue = parseFloat(value.replace(/,/g, ""));
+
+		if (numericValue > totalAmount) {
+			setInvalidAmount(true);
+			resetGuarantor();
+			return false;
+		} else {
+			setInvalidAmount(false);
+		}
+
+		if (numericValue > totalDeposit) {
+			setIsGuarantorDisabled(false);
+
+			if (!selectedGuarantor) {
+				setNoGurantorSelected(true); // Show error message if amount exceeds deposit and no guarantor is selected
+			} else {
+				setNoGurantorSelected(false);
+			}
+			return true;
+		}
+
+		setNoGurantorSelected(false);
+		setIsGuarantorDisabled(true);
+		return true;
+	};
+
 	const handleAmountChange = (e) => {
 		let value = e.target.value.replace(/,/g, "").trim();
 
 		if (value === "" || isNaN(value)) {
 			setAmount("");
-			setErrorMessage(false);
+			setInvalidAmount(false);
 			resetGuarantor();
 			return;
 		}
@@ -128,27 +155,20 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 		setAmount(value);
 
-		const numericValue = parseFloat(value.replace(/,/g, ""));
-
-		if (numericValue > totalAmount) {
-			setErrorMessage(true);
-			resetGuarantor();
-		} else {
-			setErrorMessage(false);
-
-			if (numericValue > totalDeposit) {
-				setIsGuarantorDisabled(false);
-			} else {
-				resetGuarantor();
-			}
-		}
+		validateAmount(value);
 	};
 
 	const resetGuarantor = () => {
+		setNoGurantorSelected(false);
 		setIsGuarantorDisabled(true);
 		setSelectedGuarantor(null);
 		setGuarantorDropdownValue("");
 	};
+	useEffect(() => {
+		if (selectedGuarantor) {
+			setNoGurantorSelected(false);
+		}
+	}, [selectedGuarantor]);
 
 	// ! put _ before id = _id
 	const handleGuarantorClick = () => {
@@ -170,17 +190,26 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		setShowGuarantorDropdown(true);
 
 		if (value === "") {
-			setSelectedGuarantor("");
-			setFilteredGuarantor(true);
-		}
+			// When the input is cleared, reset the selected guarantor and update error message
+			setSelectedGuarantor(null);
+			setFilteredGuarantor(
+				members.filter((m) => m._id !== selectedMember?._id)
+			);
+			setNoGurantorSelected(true); // Show error message when input is empty and no guarantor is selected
+		} else {
+			const filtered = members.filter(
+				(member) =>
+					member._id !== selectedMember?._id &&
+					member.name.toLowerCase().startsWith(value.toLowerCase())
+			);
+			setFilteredGuarantor(filtered);
 
-		const filtered = members.filter(
-			(member) =>
-				// ! put _ before id = _id
-				member.id !== selectedMember?.id &&
-				member.name.toLowerCase().startsWith(value.toLowerCase())
-		);
-		setFilteredGuarantor(filtered);
+			if (filtered.length === 0 || selectedGuarantor) {
+				setNoGurantorSelected(false); // Hide error message if a guarantor is selected or options are available
+			} else {
+				setNoGurantorSelected(true); // Show error message if no options and no guarantor is selected
+			}
+		}
 	};
 
 	useEffect(() => {
@@ -203,65 +232,40 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		};
 	}, []);
 
+	// ! for saving
 	const handleSave = async () => {
 		const numericAmount = parseFloat(amount.replace(/,/g, ""));
 
-		// Check if a member is selected
+		console.log("Selected Member:", selectedMember);
+		console.log("Numeric Amount:", numericAmount);
+		console.log("Total Deposit:", totalDeposit);
+		console.log("Selected Guarantor:", selectedGuarantor);
+
 		if (!selectedMember) {
-			setIsNoMemberModalVisible(true);
-			setTimeout(() => {
-				setIsNoMemberModalVisible(false);
-			}, 2000);
+			setIsNoMemberSelected(true);
+			setTimeout(() => setIsNoMemberSelected(false), 2000);
 			return;
 		}
 
-		// // Validate the amount
-		// if (isNaN(numericAmount) || numericAmount <= 0) {
-		// 	// Ensure amount is a valid positive number
-		// 	setIsAmountErrorVisible(true);
-		// 	setTimeout(() => {
-		// 		setIsAmountErrorVisible(false);
-		// 	}, 2000);
-		// 	return;
-		// }
-
-		// if (numericAmount > totalAmount) {
-		// 	setIsAmountErrorVisible(true);
-		// 	setTimeout(() => {
-		// 		setIsAmountErrorVisible(false);
-		// 	}, 2000);
-		// 	return;
-		// }
-
-		// // Validate if amount exceeds totalDeposit
-		// if (numericAmount > totalDeposit) {
-		// 	setIsAmountErrorVisible(true);
-		// 	setTimeout(() => {
-		// 		setIsAmountErrorVisible(false);
-		// 	}, 2000);
-		// 	return;
-		// }
-
-		if (amount > totalAmount && !selectedGuarantor) {
-			setIsNoGuarantorVisible(true);
-			setTimeout(() => {
-				setIsNoGuarantorVisible(false);
-			}, 2000);
+		if (numericAmount > totalDeposit && !selectedGuarantor) {
+			setNoGurantorSelected(true);
+			setTimeout(() => setNoGurantorSelected(false), 2000);
 			return;
 		}
 
-		// If all validations pass, proceed with saving the data
+		setSaveDisabled(false);
+		setIsConfirmationModalVisible(true);
+
 		const submissionData = {
-			borrowerId: selectedMember.id,
+			borrowerId: selectedMember._id,
 			borrowerName: selectedMember.name,
 			borrowerDeposit: selectedMember.totalDeposit,
-			guarantorId: selectedGuarantor?.id || null,
+			guarantorId: selectedGuarantor?._id || null,
 			guarantorName: selectedGuarantor?.name || null,
 			amount: numericAmount,
 			date: new Date().toISOString().split("T")[0], // Date in YYYY-MM-DD format
 		};
 		setSubmissionData(submissionData);
-		setConfirmationVisible(true);
 	};
 
 	const handleConfirmSave = async () => {
@@ -273,25 +277,25 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 			);
 
 			console.log(submissionData);
-			setIsSuccessModalVisible(true);
+			setSuccessModalVisible(true);
 			setTimeout(() => {
-				setIsSuccessModalVisible(false);
+				setSuccessModalVisible(false);
 				resetForm();
 				window.location.reload();
 			}, 2000);
 		} catch (error) {
 			console.error("Error saving record:", error);
-			setIsErrorModalVisible(true);
+			setSaveFailed(true);
 			setTimeout(() => {
-				setIsErrorModalVisible(false);
+				setSaveFailed(false);
 			}, 2000);
 		} finally {
-			setConfirmationVisible(false);
+			setIsConfirmationModalVisible(false);
 		}
 	};
 
 	const handleCancel = () => {
-		setConfirmationVisible(false);
+		setIsConfirmationModalVisible(false);
 		resetForm();
 	};
 	const resetForm = () => {
@@ -302,25 +306,27 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		setGuarantorDropdownValue("");
 		setIsGuarantorDisabled(true);
 		setFilteredMembers(members);
+		setNoGurantorSelected(false);
+		setInvalidAmount(false);
 	};
 
 	const handleCloseErrorModal = () => {
-		setIsErrorModalVisible(false);
+		setSaveFailed(false);
 	};
 
 	return (
 		<>
-			<div className="fixed z-50 inset-0 flex flex-col items-center justify-center bg-gray-800 bg-opacity-75 b-font w-full">
+			<div className="fixed z-50 inset-0 flex flex-col items-center justify-center bg-gray-800 bg-opacity-75 b-font w-full h-auto">
 				<div className="bg-slate-50 p-8">
 					<h1 className="text-2xl mb-10 font-bold">
-						Total Amount: P <span>{total.toLocaleString()}</span>
+						Total Amount: P <span>{totalAmount.toLocaleString()}</span>
 					</h1>
 					{showBorrow && (
 						<>
 							<div className="flex flex-col">
-								<div className="flex justify-between space-x-8 mb-10 f-dash">
+								<div className="flex justify-between space-x-14 mb-10 f-dash">
 									<div className="flex">
-										<p className="mr-4 text-2xl font-bold">Borrower:</p>
+										<p className="mr-4 text-2xl font-semibold">Borrower:</p>
 										<div className="relative w-45" ref={dropdownRef}>
 											<input
 												type="text"
@@ -350,10 +356,14 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 													)}
 												</div>
 											)}
+
+											{noMemberSelected && (
+												<ErrorMessage errorMessage={`No member is selected.`} />
+											)}
 										</div>
 									</div>
 									<div className="flex">
-										<p className="mr-4 text-2xl font-bold">Amount:</p>
+										<p className="mr-4 text-2xl font-semibold">Amount:</p>
 										<div className="relative w-45">
 											<input
 												required
@@ -364,16 +374,16 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 												placeholder="Enter amount..."
 												disabled={isAmountDisabled}
 											/>
-											{errorMessage && (
-												<p className="font-normal text-base absolute top-12 left-0 text-red-600 w-96">
-													Loan amount cannot be greater than{" P "}
-													{totalAmount.toLocaleString()}
-												</p>
+
+											{invalidAmount && (
+												<ErrorMessage
+													errorMessage={`Loan amount cannot be greater than ${totalAmount.toLocaleString()}`}
+												/>
 											)}
 										</div>
 									</div>
 									<div className="flex">
-										<p className="mr-4 text-2xl font-bold">Guarantor:</p>
+										<p className="mr-4 text-2xl font-semibold">Guarantor:</p>
 										<div className="relative w-45" ref={guarantorDropdownRef}>
 											<input
 												type="text"
@@ -403,27 +413,43 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 													)}
 												</div>
 											)}
+
+											{noGuarantor && (
+												<ErrorMessage errorMessage="No guarantor selected." />
+											)}
 										</div>
 									</div>
 								</div>
 
 								<Separator />
-								<div className="b-font mt-5">
+								<div className="b-font ">
 									<h3 className="text-2xl font-bold">Summary:</h3>
 									<div className="text-xl mt-3">
 										<p className="font-semibold">
-											Borrower: {selectedMember ? selectedMember.name : ""}
+											Borrower:{" "}
+											<span className="ml-2">
+												{selectedMember ? selectedMember.name : ""}
+											</span>
 										</p>
 										<p className="font-semibold">
-											Total Deposit:{" "}
-											{selectedMember ? selectedMember.totalDeposit : ""}
+											Total Deposit:
+											<span className="ml-2">
+												{selectedMember
+													? `P${selectedMember.totalDeposit.toLocaleString()}`
+													: ""}
+											</span>
 										</p>
 										<p className="font-semibold">
-											Amount: {amount ? `P${amount}` : " "}
+											Amount:
+											<span className="ml-2">
+												{amount ? `P${amount.toLocaleString()}` : " "}
+											</span>
 										</p>
 										<p className="font-semibold">
-											Guarantor:{" "}
-											{selectedGuarantor ? selectedGuarantor.name : "none"}
+											Guarantor:
+											<span className="ml-2">
+												{selectedGuarantor ? selectedGuarantor.name : "none"}
+											</span>
 										</p>
 									</div>
 								</div>
@@ -433,11 +459,33 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 
 					{showPay && <div>bayad po</div>}
 
-					<button className="paid-button" onClick={onClose}>
-						Close
-					</button>
+					<div className="flex items-center justify-between mt-10">
+						<button className="warning-button" onClick={onClose}>
+							Close
+						</button>
+						<button
+							className="primary-button"
+							onClick={handleSave}
+							disabled={saveDisabled}
+						>
+							Save
+						</button>
+					</div>
 				</div>
 			</div>
+
+			{confirmationModalVisible && (
+				<ConfirmationModal
+					message={"You are about to record the following information."}
+					memberName={submissionData.selectedMember}
+					amount={submissionData.amount.toLocaleString()}
+					guarantor={submissionData.selectedGuarantor}
+					onCancel={handleCancel}
+					onConfirm={handleConfirmSave}
+				/>
+			)}
+			{failedSave && <Modal message={"Error saving data."} />}
+			{successModalVisible && <Modal message={"Record saved successfully"} />}
 		</>
 	);
 };
