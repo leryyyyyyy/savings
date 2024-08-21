@@ -43,6 +43,10 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 	const [invalidAmount, setInvalidAmount] = useState(false);
 	const [noGuarantor, setNoGurantorSelected] = useState(false);
 
+	const [isMemberSelected, setIsMemberSelected] = useState(false);
+	const [isAmountValid, setIsAmountValid] = useState(false);
+	const [isGuarantorValid, setIsGuarantorValid] = useState(false);
+
 	useEffect(() => {
 		const fetchTotalDepositAmount = async () => {
 			try {
@@ -77,9 +81,9 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		setDropdownValue(member.name);
 		setTotalDeposit(member.totalDeposit);
 		setShowDropdown(false);
-		setIsAmountDisabled(false); //? */ Enable amount input when a member is selected
+		setIsAmountDisabled(false);
+		setIsMemberSelected(true);
 
-		// ! after testing uncomment setFilteredGuarantor(members.filter((m) => m._id !== member._id));
 		setFilteredGuarantor(members.filter((m) => m._id !== member._id));
 		if (selectedGuarantor?._id === member._id) {
 			setSelectedGuarantor(null);
@@ -111,11 +115,12 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 
 	const validateAmount = (value) => {
 		const numericValue = parseFloat(value.replace(/,/g, ""));
+		let valid = true;
 
 		if (numericValue > totalAmount) {
 			setInvalidAmount(true);
 			resetGuarantor();
-			return false;
+			valid = false;
 		} else {
 			setInvalidAmount(false);
 		}
@@ -124,16 +129,19 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 			setIsGuarantorDisabled(false);
 
 			if (!selectedGuarantor) {
-				setNoGurantorSelected(true); // Show error message if amount exceeds deposit and no guarantor is selected
+				setNoGurantorSelected(true);
+				valid = false;
 			} else {
 				setNoGurantorSelected(false);
+				setIsGuarantorDisabled(true);
 			}
-			return true;
+			setIsAmountValid(valid);
+			return valid;
 		}
 
-		setNoGurantorSelected(false);
-		setIsGuarantorDisabled(true);
-		return true;
+		// setNoGurantorSelected(false);
+		// setIsGuarantorDisabled(true);
+		// return true;
 	};
 
 	const handleAmountChange = (e) => {
@@ -177,6 +185,7 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		setSelectedGuarantor(member);
 		setGuarantorDropdownValue(member.name);
 		setShowGuarantorDropdown(false);
+		setIsGuarantorValid(true);
 	};
 
 	const handleGuarantorInput = (e) => {
@@ -227,9 +236,20 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		};
 	}, []);
 
+	useEffect(() => {
+		if (
+			isMemberSelected &&
+			isAmountValid &&
+			(isGuarantorDisabled || isGuarantorValid)
+		) {
+			setSaveDisabled(false);
+		} else {
+			setSaveDisabled(true);
+		}
+	}, [isMemberSelected, isAmountValid, isGuarantorValid, isGuarantorDisabled]);
+
 	// ! for saving
 	const handleSave = async () => {
-		setSaveDisabled(false);
 		setIsConfirmationModalVisible(true);
 
 		const numericAmount = parseFloat(amount.replace(/,/g, ""));
