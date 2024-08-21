@@ -29,9 +29,7 @@ const membersLoan = () => {
 	useEffect(() => {
 		const fetchMembers = async () => {
 			try {
-				const response = await axios.get(
-					"http://localhost:5000/api/members/memberList"
-				);
+				const response = await axios.get("http://localhost:4000/loans");
 				setMembers(response.data);
 				setFilteredMembers(response.data);
 			} catch (err) {
@@ -45,7 +43,7 @@ const membersLoan = () => {
 	useEffect(() => {
 		setFilteredMembers(
 			members.filter((members) =>
-				members.name.toLowerCase().includes(searchQuery.toLowerCase())
+				members.borrowerName.toLowerCase().includes(searchQuery.toLowerCase())
 			)
 		);
 		setCurrentPage(1); // Reset to first page when search query changes
@@ -96,7 +94,17 @@ const membersLoan = () => {
 				</section>
 				<Separator />
 				<Breadcrumb />
-				<p className="f-heading text-gray-900 mb-9">Loan</p>
+				<div className="flex items-center justify-between">
+					<p className="f-heading text-gray-900 mb-9">Loan</p>{" "}
+					<button
+						onClick={() => {
+							handleTransaction("borrow");
+						}}
+						className="mr-2 text-xs delayed-button hover:delayed-button-hover py-2 px-4 rounded-lg "
+					>
+						Borrow
+					</button>
+				</div>
 				<hr className="mb-3"></hr>
 				<div className="mb-4 flex w-64 f-body px-3 py-1 border rounded-md shadow-sm ">
 					<svg
@@ -127,16 +135,10 @@ const membersLoan = () => {
 							<tr>
 								<th className="px-4 py-2 border-b-[1px] f-subheading">Name</th>
 								<th className="px-4 py-2 border-b-[1px] f-subheading">
-									Contact No.
+									Loan amount
 								</th>
 								<th className="px-4 py-2 border-b-[1px] f-subheading">
-									Address
-								</th>
-								<th className="px-4 py-2 border-b-[1px] f-subheading text-center">
-									Body Number
-								</th>
-								<th className="px-4 py-2 border-b-[1px] f-subheading text-center">
-									Action
+									Guarantor
 								</th>
 							</tr>
 						</thead>
@@ -145,26 +147,16 @@ const membersLoan = () => {
 								currentMembers.map((members) => (
 									<tr key={members._id}>
 										<td className="border-b-[1px] px-4 py-3 f-body">
-											{members.name}
+											{members.borrowerName}
 										</td>
 										<td className="border-b-[1px] px-4 py-3 f-body">
-											{members.contactNumber}
+											{members.amount}
 										</td>
 										<td className="border-b-[1px] px-4 py-3 f-body">
-											{members.address}
+											{members.guarantorName ? members.guarantorName : "none"}
 										</td>
-										<td className="border-b-[1px] px-4 py-3 f-body text-center">
-											{members.numberOfBody}
-										</td>
+
 										<td className="border-b-[1px] px-4 py-3 f-body">
-											<button
-												onClick={() => {
-													handleTransaction("borrow");
-												}}
-												className="mr-2 text-xs delayed-button hover:delayed-button-hover py-2 px-4 rounded-lg "
-											>
-												Borrow
-											</button>
 											<button
 												onClick={() => {
 													handleTransaction("pay");
