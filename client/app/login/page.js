@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import AuthContext from "../../context/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Button from "../components/Button";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -56,12 +57,9 @@ const Login = () => {
                 required
               />
             </div>
-            <button
-              type="submit"
-              className=" primary-button hover:primary-button-hover w-full"
-            >
+            <Button type="submit" variant="primary" className="w-full">
               Login
-            </button>
+            </Button>
           </form>
         </div>
       </div>

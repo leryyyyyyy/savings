@@ -10,6 +10,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "../../../components/Loader/Loader.js";
 import Breadcrumb from "@/app/components/Breadcrumb";
+import Button from "@/app/components/Button";
 
 const editMember = () => {
   const { user } = useContext(AuthContext);
@@ -152,12 +153,9 @@ const editMember = () => {
             </div>
           </div>
           <div className="col-span-2 flex justify-end pr-10 mt-16">
-            <button
-              type="submit"
-              className="primary-button hover:primary-button-hover w-1/5 "
-            >
+            <Button type="submit" className="w-1/5" variant="primary">
               Submit
-            </button>
+            </Button>
           </div>
         </form>
         <ToastContainer />
