@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import Loader from "../components/Loader/Loader.js";
 import Breadcrumb from "../components/Breadcrumb";
+import Button from "../components/Button";
 
 const membersList = () => {
   const { user } = useContext(AuthContext);
@@ -82,26 +83,9 @@ const membersList = () => {
         <Breadcrumb />
         <p className="f-heading text-gray-900 ">Members</p>
         <div className="flex justify-end mb-8">
-          <button
-            onClick={handleAddNewMember}
-            className="flex primary-button hover:primary-button-hover"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="size-6 mr-2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z"
-              />
-            </svg>
+          <Button onClick={handleAddNewMember} variant="primary">
             Add New Member
-          </button>
+          </Button>
         </div>
         <hr className="mb-3"></hr>
         <div className="mb-4 flex w-64 f-body px-3 py-1 border rounded-md shadow-sm ">
@@ -163,15 +147,16 @@ const membersList = () => {
                       {members.numberOfBody}
                     </td>
                     <td className="border-b-[1px] px-4 py-3 f-body">
-                      <button
+                      <Button
                         onClick={() => handleUpdate(members._id)}
-                        className="mr-2 text-xs primary-button hover:primary-button-hover py-1 px-2 rounded"
+                        className="py-2 px-3 text-xs mr-3"
+                        variant="delayed"
                       >
                         Update
-                      </button>
-                      <button className="text-xs warning-button hover:warning-button-hover py-1 px-2 rounded">
+                      </Button>
+                      <Button variant="warning" className="py-2 px-3 text-xs">
                         Delete
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                 ))

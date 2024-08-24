@@ -6,6 +6,7 @@ import axios from "axios";
 import ConfirmationModal from "./ConfirmationModal";
 import ErrorMessage from "./ErrorMessage";
 import Modal from "./Modal";
+import Button from "./Button";
 
 const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 	const [members, setMembers] = useState([]);
@@ -25,7 +26,7 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 
 	const [amount, setAmount] = useState("");
 	const [isAmountDisabled, setIsAmountDisabled] = useState(true);
-	const [saveDisabled, setSaveDisabled] = useState(true);
+	const [saveDisabled, setSaveDisabled] = useState(false);
 
 	const [submissionData, setSubmissionData] = useState({});
 	const dropdownRef = useRef(null);
@@ -76,6 +77,7 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 
 		fetchMembers();
 	}, []);
+
 	const handleSelectMember = (member) => {
 		setSelectedMember(member);
 		setDropdownValue(member.name);
@@ -115,9 +117,6 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 
 	const validateAmount = (value) => {
 		const numericValue = parseFloat(value.replace(/,/g, ""));
-		const totalAmountNumber = Number(totalAmount);
-		const totalDepositNumber = Number(totalDeposit);
-
 		let valid = true;
 
 		if (numericValue > totalAmountNumber) {
@@ -470,9 +469,9 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 					{showPay && <div>bayad po</div>}
 
 					<div className="flex items-center justify-between mt-10">
-						<button className="warning-button" onClick={onClose}>
+						<Button variant="warning" onClick={onClose}>
 							Close
-						</button>
+						</Button>
 						<button
 							className="primary-button"
 							onClick={handleSave}

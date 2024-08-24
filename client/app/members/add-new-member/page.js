@@ -9,6 +9,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "../../components/Loader/Loader.js";
 import Breadcrumb from "@/app/components/Breadcrumb.js";
+import Button from "@/app/components/Button.js";
 
 const addNewMember = () => {
   const { user } = useContext(AuthContext);
@@ -48,7 +49,11 @@ const addNewMember = () => {
   };
 
   if (user === null) {
-    return <Loader />;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader />;
+      </div>
+    );
   }
   if (!user) {
     return null;
@@ -134,12 +139,9 @@ const addNewMember = () => {
             </div>
           </div>
           <div className="col-span-2 flex justify-end pr-10 mt-16">
-            <button
-              type="submit"
-              className="primary-button hover:primary-button-hover w-1/5 "
-            >
+            <Button type="submit" className="w-1/5 " variant="primary">
               Submit
-            </button>
+            </Button>
           </div>
         </form>
         <ToastContainer />
