@@ -15,6 +15,7 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [totalAmount, setTotalAmount] = useState(0);
 	const [totalDeposit, setTotalDeposit] = useState(0);
+
 	const [isGuarantorDisabled, setIsGuarantorDisabled] = useState(true);
 	const [filteredGuarantor, setFilteredGuarantor] = useState([]);
 	const [guarantorDropdownValue, setGuarantorDropdownValue] = useState("");
@@ -24,7 +25,7 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 
 	const [amount, setAmount] = useState("");
 	const [isAmountDisabled, setIsAmountDisabled] = useState(true);
-	const [saveDisabled, setSaveDisabled] = useState(false);
+	const [saveDisabled, setSaveDisabled] = useState(true);
 
 	const [submissionData, setSubmissionData] = useState({});
 	const dropdownRef = useRef(null);
@@ -75,7 +76,6 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 
 		fetchMembers();
 	}, []);
-
 	const handleSelectMember = (member) => {
 		setSelectedMember(member);
 		setDropdownValue(member.name);
@@ -115,33 +115,34 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 
 	const validateAmount = (value) => {
 		const numericValue = parseFloat(value.replace(/,/g, ""));
+		const totalAmountNumber = Number(totalAmount);
+		const totalDepositNumber = Number(totalDeposit);
+
 		let valid = true;
 
-		if (numericValue > totalAmount) {
+		if (numericValue > totalAmountNumber) {
+			console.log("Amount exceeds totalAmount, invalid.");
 			setInvalidAmount(true);
+			setIsGuarantorDisabled(true);
 			resetGuarantor();
 			valid = false;
-		} else {
+		} else if (numericValue > totalDepositNumber) {
+			console.log("Amount requires a guarantor.");
 			setInvalidAmount(false);
-		}
-
-		if (numericValue > totalDeposit) {
 			setIsGuarantorDisabled(false);
-
-			if (!selectedGuarantor) {
-				setNoGurantorSelected(true);
-				valid = false;
-			} else {
-				setNoGurantorSelected(false);
-				setIsGuarantorDisabled(true);
-			}
-			setIsAmountValid(valid);
-			return valid;
+			setNoGurantorSelected(true);
+			valid = true;
+		} else {
+			console.log("Amount is valid and no guarantor needed.");
+			setInvalidAmount(false);
+			setIsGuarantorDisabled(true);
+			resetGuarantor();
+			valid = true;
 		}
 
-		// setNoGurantorSelected(false);
-		// setIsGuarantorDisabled(true);
-		// return true;
+		console.log("Final validity:", valid);
+		setIsAmountValid(valid);
+		return valid;
 	};
 
 	const handleAmountChange = (e) => {
@@ -167,21 +168,17 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		setGuarantorDropdownValue("");
 	};
 
-	useEffect(() => {
-		if (selectedGuarantor) {
-			setNoGurantorSelected(false);
-		}
-	}, [selectedGuarantor]);
-
-	// ! put _ before id = _id
 	const handleGuarantorClick = () => {
+		console.log("Dropdown clicked");
 		if (guarantorDropdownValue === "") {
+			console.log("Filtering guarantors");
 			setFilteredGuarantor(members.filter((m) => m.id !== selectedMember?.id));
 		}
 		setShowGuarantorDropdown(true);
 	};
 
 	const handleSelectGuarantor = (member) => {
+		console.log("Selected guarantor:", member);
 		setSelectedGuarantor(member);
 		setGuarantorDropdownValue(member.name);
 		setShowGuarantorDropdown(false);
@@ -190,11 +187,12 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 
 	const handleGuarantorInput = (e) => {
 		const value = e.target.value;
+		console.log("Input value:", value);
 		setGuarantorDropdownValue(value);
 		setShowGuarantorDropdown(true);
 
 		if (value === "") {
-			setSaveDisabled(true);
+			console.log("Input is empty, resetting guarantor");
 			setSelectedGuarantor(null);
 			setFilteredGuarantor(
 				members.filter((m) => m._id !== selectedMember?._id)
@@ -206,6 +204,7 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 					member._id !== selectedMember?._id &&
 					member.name.toLowerCase().startsWith(value.toLowerCase())
 			);
+			console.log("Filtered guarantors:", filtered);
 			setFilteredGuarantor(filtered);
 
 			if (filtered.length === 0 || selectedGuarantor) {
@@ -237,18 +236,36 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 	}, []);
 
 	useEffect(() => {
-		if (
+		console.log("Amount:", amount);
+		console.log("Selected Guarantor:", selectedGuarantor);
+		console.log("isMemberSelected:", isMemberSelected);
+		console.log("isAmountValid:", isAmountValid);
+		console.log("isGuarantorValid:", isGuarantorValid);
+		console.log("isGuarantorDisabled:", isGuarantorDisabled);
+	}, [
+		amount,
+		selectedGuarantor,
+		isMemberSelected,
+		isAmountValid,
+		isGuarantorValid,
+		isGuarantorDisabled,
+	]);
+
+	useEffect(() => {
+		console.log("Dependencies - isMemberSelected:", isMemberSelected);
+		console.log("Dependencies - isAmountValid:", isAmountValid);
+		console.log("Dependencies - isGuarantorValid:", isGuarantorValid);
+		console.log("Dependencies - isGuarantorDisabled:", isGuarantorDisabled);
+
+		const isValid =
 			isMemberSelected &&
 			isAmountValid &&
-			(isGuarantorDisabled || isGuarantorValid)
-		) {
-			setSaveDisabled(false);
-		} else {
-			setSaveDisabled(true);
-		}
+			(isGuarantorDisabled || isGuarantorValid);
+
+		console.log("Save button validity:", !isValid);
+		setSaveDisabled(!isValid);
 	}, [isMemberSelected, isAmountValid, isGuarantorValid, isGuarantorDisabled]);
 
-	// ! for saving
 	const handleSave = async () => {
 		setIsConfirmationModalVisible(true);
 
@@ -295,6 +312,7 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		setIsConfirmationModalVisible(false);
 		resetForm();
 	};
+
 	const resetForm = () => {
 		setSelectedMember(null);
 		setDropdownValue("");
@@ -305,11 +323,7 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		setIsAmountDisabled(true);
 		setIsGuarantorDisabled(true);
 		setNoGurantorSelected(false);
-		// setSaveDisabled(true);
-	};
-
-	const handleCloseErrorModal = () => {
-		setSaveFailed(false);
+		setSaveDisabled(true); // Ensure the save button is disabled after resetting
 	};
 
 	return (
@@ -340,7 +354,7 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 													{filteredMembers.length > 0 ? (
 														filteredMembers.map((member) => (
 															<div
-																key={member._id}
+																key={member.id}
 																className="text-xl cursor-pointer p-2 hover:bg-gray-200"
 																onClick={() => handleSelectMember(member)}
 															>
