@@ -110,12 +110,6 @@ const membersLoan = () => {
     setModalType(null);
   };
 
-  const handleSubmitPayment = (paymentAmount) => {
-    if (selectedMember && paymentAmount > 0) {
-      handlePayment(selectedMember._id, paymentAmount);
-    }
-  };
-
   if (user === null) {
     return (
       <div className="flex items-center justify-center h-screen">
