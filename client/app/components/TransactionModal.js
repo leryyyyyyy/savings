@@ -8,7 +8,8 @@ import ErrorMessage from "./ErrorMessage";
 import Modal from "./Modal";
 import Button from "./Button";
 
-const TransactionModal = ({ showBorrow, showPay, onClose }) => {
+const TransactionModal = ({ showBorrow, showPay, member, onClose }) => {
+  if (!member) return null;
   const [members, setMembers] = useState([]);
   const [selectedMember, setSelectedMember] = useState(null);
   const [filteredMembers, setFilteredMembers] = useState([]);
@@ -47,6 +48,8 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
   const [isMemberSelected, setIsMemberSelected] = useState(false);
   const [isAmountValid, setIsAmountValid] = useState(false);
   const [isGuarantorValid, setIsGuarantorValid] = useState(false);
+
+  const [paymentAmount, setPaymentAmount] = useState(0);
 
   useEffect(() => {
     const fetchTotalDepositAmount = async () => {
@@ -454,7 +457,67 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
             </>
           )}
 
-          {showPay && <div>bayad po</div>}
+          {showPay && (
+            <div className="fixed z-50 inset-0 flex flex-col items-center justify-center bg-gray-800 bg-opacity-75 b-font w-full h-auto">
+              <div className="bg-slate-50 p-8 max-w-sm w-full">
+                <h2 className="text-2xl mb-10 font-bold">
+                  {showPay ? "Pay Loan" : "Borrow Loan"}
+                </h2>
+                <div className="mb-4">
+                  <p className="mr-4 text-xl font-bold">
+                    Borrower Name:{" "}
+                    <span className="mr-4 text-xl font-semibold">
+                      {member.borrowerName}
+                    </span>
+                  </p>
+                  <p className="mr-4 text-xl font-bold">
+                    Loan Amount:{" "}
+                    <span className="mr-4 text-xl font-semibold">
+                      {member.amount}
+                    </span>
+                  </p>
+                  <p className="mr-4 text-xl font-bold">
+                    Guarantor:{" "}
+                    <span className="mr-4 text-xl font-semibold">
+                      {member.guarantorName}
+                    </span>
+                  </p>
+                  <p className="mr-4 text-xl font-bold text-red-500">
+                    Balance:{" "}
+                    <span className="mr-4 text-xl font-semibold text-red-500">
+                      {member.balance}
+                    </span>
+                  </p>
+                </div>
+                {showPay && (
+                  <>
+                    <div className="mb-4">
+                      <label className="mr-4 text-xl font-semibold">
+                        Payment Amount
+                      </label>
+                      <input
+                        type="number"
+                        className="border-2 border-gray-400 rounded-md w-full text-xl p-1"
+                        placeholder="Enter payment amount"
+                      />
+                    </div>
+                  </>
+                )}
+                <div className="flex justify-end">
+                  <Button onClick={onClose} className="mr-2" variant="warning">
+                    Cancel
+                  </Button>
+                  <Button
+                    // onClick={() => handleSubmitPayment(paymentAmount)}
+                    className=""
+                    variant="paid"
+                  >
+                    {showPay ? "Pay" : "Borrow"}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="flex items-center justify-between mt-10">
             <Button variant="warning" onClick={onClose}>

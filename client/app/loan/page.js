@@ -16,6 +16,7 @@ import Button from "../components/Button";
 const membersLoan = () => {
   const { user } = useContext(AuthContext);
   const [members, setMembers] = useState([]);
+  const [selectedMember, setSelectedMember] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredMembers, setFilteredMembers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,21 +28,50 @@ const membersLoan = () => {
     useState(false);
   const [modalType, setModalType] = useState(null);
 
-  useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const response = await axios.get(
-          // "http://localhost:5000/api/members/memberList"
-          "http://localhost:4000/loans"
-        );
-        setMembers(response.data);
-        setFilteredMembers(response.data);
-      } catch (err) {
-        console.error("Error fetching members:", err);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchMembers = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         // "http://localhost:5000/api/members/memberList"
+  //         "http://localhost:4000/loans"
+  //       );
+  //       setMembers(response.data);
+  //       setFilteredMembers(response.data);
+  //     } catch (err) {
+  //       console.error("Error fetching members:", err);
+  //     }
+  //   };
 
-    fetchMembers();
+  //   fetchMembers();
+  // }, []);
+
+  useEffect(() => {
+    const mockData = [
+      {
+        _id: 1,
+        borrowerName: "John Doe",
+        amount: 5000,
+        balance: 5000,
+        guarantorName: "",
+      },
+      {
+        _id: 2,
+        borrowerName: "Alice Johnson",
+        amount: 3000,
+        balance: 3000,
+        guarantorName: "",
+      },
+      {
+        _id: 3,
+        borrowerName: "Michael Davis",
+        amount: 7000,
+        balance: 7000,
+        guarantorName: "Laura Wilson",
+      },
+    ];
+
+    setMembers(mockData);
+    setFilteredMembers(mockData);
   }, []);
 
   useEffect(() => {
@@ -66,14 +96,24 @@ const membersLoan = () => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const handleTransaction = (type) => {
+  const handleTransaction = (type, member = null) => {
     setModalType(type);
     setIsTransactionModalVisible(true);
+
+    if (type === "pay") {
+      setSelectedMember(member);
+    }
   };
 
   const handleCloseModal = () => {
     setIsTransactionModalVisible(false);
     setModalType(null);
+  };
+
+  const handleSubmitPayment = (paymentAmount) => {
+    if (selectedMember && paymentAmount > 0) {
+      handlePayment(selectedMember._id, paymentAmount);
+    }
   };
 
   if (user === null) {
@@ -143,6 +183,9 @@ const membersLoan = () => {
                   Loan amount
                 </th>
                 <th className="px-4 py-2 border-b-[1px] f-subheading">
+                  Balance
+                </th>
+                <th className="px-4 py-2 border-b-[1px] f-subheading">
                   Guarantor
                 </th>
                 <th className="px-4 py-2 border-b-[1px] f-subheading">
@@ -161,15 +204,18 @@ const membersLoan = () => {
                       {members.amount}
                     </td>
                     <td className="border-b-[1px] px-4 py-3 f-body">
+                      {members.balance}
+                    </td>
+                    <td className="border-b-[1px] px-4 py-3 f-body">
                       {members.guarantorName ? members.guarantorName : "none"}{" "}
                     </td>
 
                     <td className="border-b-[1px] px-4 py-3 f-body">
                       <Button
                         onClick={() => {
-                          handleTransaction("pay");
+                          handleTransaction("pay", members);
                         }}
-                        className="text-xs py-1 px-2"
+                        className="text-xs py-2 px-3"
                         variant="delayed"
                       >
                         Pay
@@ -210,6 +256,7 @@ const membersLoan = () => {
         <TransactionModal
           showBorrow={modalType === "borrow"}
           showPay={modalType === "pay"}
+          member={selectedMember}
           onClose={handleCloseModal}
         />
       )}
