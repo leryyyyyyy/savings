@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useReducer } from "react";
-import Props from "prop-types";
+import propTypes from "prop-types";
 import Separator from "./Separator";
 import axios from "axios";
 import ConfirmationModal from "./ConfirmationModal";
@@ -25,6 +25,11 @@ const initialState = {
 	invalidAmount: false,
 	noGuarantor: false,
 	saveDisabled: true,
+	confirmationModalVisible: false,
+	submissionData: {},
+	successModalVisible: false,
+	failedSave: false,
+	loanRecord: {},
 };
 
 const actions = {
@@ -43,19 +48,22 @@ const actions = {
 	SHOW_GUARANTOR_DROPDOWN: "SHOW_GUARANTOR_DROPDOWN",
 	HIDE_GUARANTOR_DROPDOWN: "HIDE_GUARANTOR_DROPDOWN",
 	RESET_FORM: "RESET_FORM",
-
 	SET_GUARANTOR_DROPDOWN_VALUE: "SET_GUARANTOR_DROPDOWN_VALUE",
 	FILTER_GUARANTORS: "FILTER_GUARANTORS",
 	RESET_GUARANTOR: "RESET_GUARANTOR",
 	SET_NO_GUARANTOR_SELECTED: "SET_NO_GUARANTOR_SELECTED",
 	ENABLE_SAVE: "ENABLE_SAVE",
+	SET_SUBMISSION_DATA: "SET_SUBMISSION_DATA",
+	RESET_SUMMARY: "RESET_SUMMARY",
+	SET_CONFIRMATION_MODAL_VISIBLE: "SET_CONFIRMATION_MODAL_VISIBLE",
+	SAVE_SUCCESS: "SAVE_SUCCESS",
+	SAVE_FAILED: "SAVE_FAILED",
 };
 
 function formValidation(state, action) {
 	switch (action.type) {
 		case actions.TOTAL_AMOUNT:
 			return { ...state, totalAmount: action.payload };
-
 		case actions.SET_MEMBERS:
 			return {
 				...state,
@@ -92,6 +100,11 @@ function formValidation(state, action) {
 			const overTotalAmount = loanAmount > state.totalAmount;
 			const overTotalDeposit =
 				loanAmount > state.selectedMember?.totalDeposit || false;
+
+			const needsGuarantor = overTotalAmount || overTotalDeposit;
+			const updatedGuarantor = needsGuarantor ? state.selectedGuarantor : null;
+
+			const resetGuarantor = !overTotalDeposit || overTotalAmount;
 			return {
 				...state,
 				amount: formattedValue,
@@ -99,7 +112,10 @@ function formValidation(state, action) {
 				invalidAmount: overTotalAmount || overTotalDeposit,
 				isGuarantorDisabled: !overTotalDeposit || overTotalAmount,
 				noGuarantor: !overTotalAmount && overTotalDeposit,
-				selectedGuarantor: !overTotalAmount && overTotalDeposit,
+				selectedGuarantor: updatedGuarantor,
+				guarantorDropdownValue: resetGuarantor
+					? ""
+					: state.guarantorDropdownValue,
 			};
 		case actions.FILTER_GUARANTORS:
 			const filteredGuarantors = state.members.filter((member) =>
@@ -166,10 +182,39 @@ function formValidation(state, action) {
 				selectedGuarantor: null,
 				saveDisabled: true,
 			};
+
 		case actions.ENABLE_SAVE:
 			return {
 				...state,
 				saveDisabled: !action.payload,
+			};
+		case actions.RESET_SUMMARY:
+			return {
+				...state,
+				selectedMember: null,
+				totalDeposit: 0,
+				invalidAmount: true,
+			};
+
+		case actions.SET_CONFIRMATION_MODAL_VISIBLE:
+			return {
+				...state,
+				confirmationModalVisible: action.payload,
+			};
+		case actions.SAVE_SUCCESS:
+			return {
+				...state,
+				successModalVisible: action.payload,
+			};
+		case actions.SAVE_FAILED:
+			return {
+				...state,
+				failedSave: action.payload,
+			};
+		case actions.SET_SUBMISSION_DATA:
+			return {
+				...state,
+				loanRecord: action.payload,
 			};
 		default:
 			return state;
@@ -203,7 +248,6 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		const fetchMembers = async () => {
 			try {
 				const response = await axios.get("http://localhost:4000/members");
-				console.log("fetched members: ", response.data);
 				dispatch({ type: actions.SET_MEMBERS, payload: response.data });
 			} catch (error) {
 				console.error("Error fetching data:", error);
@@ -238,6 +282,22 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		};
 	}, [state.showDropdown, state.showGuarantorDropdown]);
 
+	useEffect(() => {
+		const canSave =
+			!!state.selectedMember &&
+			state.rawAmount > 0 &&
+			state.rawAmount <= state.totalAmount &&
+			(state.rawAmount <= state.selectedMember.totalDeposit ||
+				!!state.selectedGuarantor);
+
+		dispatch({ type: actions.ENABLE_SAVE, payload: canSave });
+	}, [
+		state.selectedMember,
+		state.rawAmount,
+		state.totalAmount,
+		state.selectedGuarantor,
+	]);
+
 	const handleDropdownClick = () => {
 		dispatch({ type: actions.TOGGLE_DROPDOWN });
 	};
@@ -261,7 +321,6 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 	const handleSelectMember = (member) => {
 		dispatch({ type: actions.SELECT_MEMBER, payload: member });
 		dispatch({ type: actions.HIDE_DROPDOWN }); // Hide dropdown after selecting a member
-		checkEnableSave();
 	};
 
 	const handleAmountChange = (e) => {
@@ -274,8 +333,6 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 			type: actions.SET_AMOUNT,
 			payload: { formattedValue, loanAmount },
 		});
-
-		checkEnableSave();
 	};
 
 	const handleGuarantorInput = (e) => {
@@ -286,17 +343,17 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		if (value.trim() === "") {
 			dispatch({ type: actions.RESET_GUARANTOR });
 		} else {
-			const filtered = state.members.filter(
-				(member) =>
-					state.members.filter((m) => m.id !== member.id) &&
-					member.name.toLowerCase().startsWith(action.payload.toLowerCase())
-			);
-			console.log("Filtered guarantors:", filtered);
-			dispatch({ type: actions.FILTER_GUARANTORS, payload: filtered });
-			dispatch({
-				type: actions.SET_NO_GUARANTOR_SELECTED,
-				payload: filtered.length === 0,
-			});
+			const filterMembers = (state, action) => {
+				const filtered = state.members.filter(
+					(member) =>
+						state.members.filter((m) => m.id !== member.id) &&
+						member.name.toLowerCase().startsWith(action.payload.toLowerCase())
+				);
+				return filtered;
+			};
+
+			const action = { type: "FILTER_MEMBERS", payload: "searchTerm" };
+			const filteredMembers = filterMembers(state, action);
 		}
 	};
 
@@ -307,7 +364,6 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 	const handleSelectGuarantor = (guarantor) => {
 		dispatch({ type: actions.SET_GUARANTOR, payload: guarantor });
 		dispatch({ type: actions.HIDE_GUARANTOR_DROPDOWN }); // Hide dropdown after selecting a guarantor
-		checkEnableSave();
 	};
 
 	const loanErrorMsg = () => {
@@ -320,20 +376,57 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		) {
 			return `Guarantor is required`;
 		}
-		// return "Invalid input";
 	};
 
-	function checkEnableSave() {
-		const canSave =
-			state.selectedMember &&
-			((state.rawAmount > state.totalAmount && state.selectedGuarantor) ||
-				state.rawAmount <= state.totalAmount);
-
+	const handleSave = () => {
 		dispatch({
-			type: actions.ENABLE_SAVE,
-			payload: canSave,
+			type: actions.SET_CONFIRMATION_MODAL_VISIBLE,
+			payload: true,
 		});
-	}
+
+		const loanRecord = {
+			borrowerId: state.selectedMember?.id,
+			borrowerName: state.selectedMember?.name,
+			borrowerDeposit: state.selectedMember.totalDeposit,
+			amount: state.rawAmount,
+			guarantorId: state.selectedGuarantor?._id || null,
+			guarantor: state.selectedGuarantor?.name || null,
+			date: new Date().toISOString().split("T")[0],
+		};
+		dispatch({ type: actions.SET_SUBMISSION_DATA, payload: loanRecord });
+	};
+
+	const confirmSubmission = async () => {
+		try {
+			const loanRecord = state.loanRecord;
+			const response = await axios.post(
+				//! change to loan API,
+				"http://localhost:4000/loans",
+				loanRecord
+			);
+			dispatch({ type: actions.SAVE_SUCCESS, payload: true });
+			setTimeout(() => {
+				dispatch({ type: actions.SAVE_SUCCESS, payload: false });
+				dispatch({ type: actions.RESET_FORM });
+				window.location.reload();
+			}, 2000);
+		} catch (error) {
+			dispatch({ type: actions.SAVE_FAILED, payload: true });
+			setTimeout(() => {
+				dispatch({ type: actions.SAVE_FAILED, payload: false });
+				window.location.reload();
+			}, 2000);
+		} finally {
+			dispatch({
+				type: actions.SET_CONFIRMATION_MODAL_VISIBLE,
+				payload: false,
+			});
+		}
+	};
+	const handleCancel = () => {
+		dispatch({ type: actions.SET_CONFIRMATION_MODAL_VISIBLE, payload: false });
+		dispatch({ type: actions.RESET_FORM });
+	};
 
 	return (
 		<>
@@ -414,7 +507,7 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 													{state.filteredGuarantors.length > 0 ? (
 														state.filteredGuarantors.map((guarantor) => (
 															<div
-																key={guarantor._id}
+																key={guarantor.id}
 																className="text-xl cursor-pointer p-2 hover:bg-gray-200"
 																onClick={() => handleSelectGuarantor(guarantor)}
 															>
@@ -480,7 +573,7 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 						</Button>
 						<button
 							className="primary-button"
-							onClick={state.handleSave}
+							onClick={handleSave}
 							disabled={state.saveDisabled}
 						>
 							Save
@@ -491,14 +584,14 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 
 			{state.confirmationModalVisible && (
 				<ConfirmationModal
-					message={"You are about to record the following information."}
-					memberName={submissionData.borrowerName}
-					amount={submissionData.amount}
-					guarantor={submissionData.guarantorName}
+					memberName={state.selectedMember?.name}
+					guarantor={state.selectedGuarantor?.name || "none"}
+					amount={state.amount}
 					onCancel={handleCancel}
-					onConfirm={handleConfirmSave}
+					onConfirm={confirmSubmission}
 				/>
 			)}
+
 			{state.failedSave && <Modal message={"Error saving data."} />}
 			{state.successModalVisible && (
 				<Modal message={"Record saved successfully"} />
@@ -506,5 +599,9 @@ const TransactionModal = ({ showBorrow, showPay, onClose }) => {
 		</>
 	);
 };
-
+TransactionModal.propTypes = {
+	showBorrow: propTypes.bool,
+	showPay: propTypes.bool,
+	onClose: propTypes.func,
+};
 export default TransactionModal;
