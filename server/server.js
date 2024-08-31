@@ -16,5 +16,6 @@ app.use("/api/members", require("./routes/memberRoutes"));
 app.use("/api/deposit", require("./routes/depositRoutes"));
 app.use("/api/reports", require("./routes/reportRoutes"));
 app.use("/api/amount", require("./routes/depositAmountRoute"));
+app.use("/api/loan", require("./routes/loanRoute"));
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
